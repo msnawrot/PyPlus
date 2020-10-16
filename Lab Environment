@@ -1,0 +1,135 @@
+Matt
+
+This email provides details about the lab environment.
+
+Note, the bottom of this email contains some terms & conditions for this course and on using the lab environment. By participating in this course you are agreeing to these conditions.
+
+
+
+There are two components in your lab environment:
+1. An AWS server
+2. A set of test routers and switches that you can execute your code against.
+
+
+AWS Server
+AWS AMI Server (RedHat-based)
+Python 3.6 (you can toggle which version of Python is active by editing your .bashrc file, basically source the 'py27_venv' instead of the 'py3_venv').
+Python virtualenv (so you can install Python libraries without sudo privileges)
+Netmiko, NAPALM and several other libraries are already installed
+
+You should be able to SSH into this server. I will send you your username and password in a separate email.
+
+
+Note, the lab environment is using a Python virtual environment; consequently, you will need to the use the following at the top of your Python files:
+
+#!/usr/bin/env python
+
+This will help ensure that the correct Python is used (i.e. the virtualenv Python that has all the necessary libraries).
+
+
+
+Lab Environment Network Devices:
+
+The lab environment network devices consist of:
+    2 x Cisco IOS-XE routers
+    4 x Arista vEOS switches
+    1 x Juniper SRX
+    2 x NX-OSv switches
+
+The TCP/UDP ports used in the course should be the standard ports (SSH = TCP22, SNMP = UDP161, EAPI = TCP443) unless noted otherwise (for example, NX-API is using TCP8443).
+
+
+In general, you will only be able to access the lab network devices from your lab AWS server.
+cisco3 (Cisco IOS-XE)
+    hostname = cisco3.lasthop.io
+    snmp_port = 161
+    ssh_port = 22
+    username = pyclass
+    password = 88newclass
+
+cisco4 (Cisco IOS-XE)
+    hostname = cisco4.lasthop.io
+    snmp_port = 161
+    ssh_port = 22
+    username = pyclass
+    password = 88newclass
+
+arista1 (Arista vEOS switch)
+    hostname = arista1.lasthop.io
+    ssh_port = 22
+    eapi_port = 443
+    username = pyclass
+    password = 88newclass
+
+arista2 (Arista vEOS switch)
+    hostname = arista2.lasthop.io
+    ssh_port = 22
+    eapi_port = 443
+    username = pyclass
+    password = 88newclass
+
+arista3 (Arista vEOS switch)
+    hostname = arista3.lasthop.io
+    ssh_port = 22
+    eapi_port = 443
+    username = pyclass
+    password = 88newclass
+
+arista4 (Arista vEOS switch)
+    hostname = arista4.lasthop.io
+    ssh_port = 22
+    eapi_port = 443
+    username = pyclass
+    password = 88newclass
+
+srx2 (Juniper SRX)
+    hostname = srx2.lasthop.io
+    ssh_port = 22
+    netconf_port = 830
+    username = pyclass
+    password = 88newclass
+
+nxos1 (NX-OSv Switch)
+    hostname = nxos1.lasthop.io
+    ssh_port = 22
+    nxapi_port = 8443
+    username = pyclass
+    password = 88newclass
+
+nxos2 (NX-OSv Switch)
+    hostname = nxos2.lasthop.io
+    ssh_port = 22
+    nxapi_port = 8443
+    username = pyclass
+    password = 88newclass
+​​​​​​​
+Note, cisco3-4, arista1-4, and srx2 are all connected to each other on the 10.220.88.0/24 network (at layer3). The nxos1 and nxos2 devices are on a separate network and connect to each other on four-parallel links (Eth1/1, Eth1/2, Eth1/3, and Eth1/4), but don't connect to the other devices.
+
+​​​​​​​
+
+Course and Lab Terms & Conditions
+
+I will try to keep this pretty simple.
+
+The videos and other content of this course are for your personal use and should not be shared with anyone else. The lab environment is for the use of the students of this course and should not be shared with anyone else.
+
+You are responsible for what you do in the lab environment.
+
+Don't break any laws of the United States or of the country where you are located while using the lab environment or while participating in this course. You are using the lab environment for the purposes of accomplishing the work of this course and for better understanding Python and Network Automation.
+
+Don't try to break into anyone else account on the lab system.  Don't try to use the lab environment for sniffing, scanning, or as a means for attempting to break into anyone else's computer, network device, or any other electronic device.
+
+Since the server that I am using runs inside Amazon Web Services, you also agree to abide by any AWS terms for appropriate use including:
+
+ http://aws.amazon.com/aup/
+ http://aws.amazon.com/service-terms/
+
+
+I reserve the right to remove your access from the lab system.
+
+Okay, enough with that garbage...now back to the course :-)
+
+
+To make sure you keep getting these emails, please add support@twb-tech.com to your address book or whitelist us. Want out of the loop? Unsubscribe.
+
+Our postal address: Twin Bridges Technology, 88 King Street #1217, San Francisco, CA 94107

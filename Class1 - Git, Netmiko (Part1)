@@ -1,0 +1,216 @@
+Matt
+
+
+Course Prerequisites
+​
+There are some prerequisites for this course. If you don't meet these prerequisites, please let me know.
+
+1)You must have some familiarity with Python programming. You can be slow and raw at writing Python code, but the basics of Python should not be new to you. This basically corresponds to classes #1-5 of my Learning Python course. If you have not participated in this course or feel you need to ramp up on your basic Python skills, please email me.
+
+2)You need to be familiar with basic network engineering concepts (routing, switching, Cisco CLI configuration). This is a course for network engineers. If you are not a network engineer, then the course is probably not for you.
+
+3)You need to have some very basic familiarity with Linux. You need to be able to move around the file system, execute Python scripts, and edit files.​
+
+
+
+Course Format
+
+The course will consist of a lesson a week for ten weeks. The lesson should come out every Thursday. I will give myself a slight fudge factor on this, however, so the lesson might occasionally arrive on Friday.
+
+The lessons will consist of videos, exercises, and links to other relevant content. The lessons will all be delivered via email.
+
+The course will also have a lab environment.  I will send separate emails detailing the lab environment and providing you with your lab credentials.
+
+For those individuals that purchased the Plus and Premium Packages, there will be a community forum which I will provide details about separately.
+
+All right, enough with the preliminaries, let's get started...
+
+
+
+​Videos:
+
+     The video password is: 36JWatt  [Git Videos]
+
+      I. Why care about Git?
+         Video https://vimeo.com/291603679
+         Length is 4 minutes
+         Audio Transcript
+
+      II. Git - Getting Started
+         Video https://vimeo.com/291744010
+         Length is 10 minutes
+         Audio Transcript
+
+      III. Git - Adding and Removing Files
+         Video https://vimeo.com/291755056
+         Length is 3 minutes
+         Audio Transcript
+
+      IV. Git - Push and Pull
+         Video https://vimeo.com/291761305
+         Length is 8 minutes
+         Audio Transcript
+
+    V. Git - Branches
+         Video https://vimeo.com/292011525
+         Length is 12 minutes
+         Audio Transcript
+
+    VI. Git - Rebase
+         Video https://vimeo.com/292016373
+         Length is 8 minutes
+         Audio Transcript
+
+    VII. Git - Common Workflow
+         Video https://vimeo.com/292196014
+         Length is 5 minutes
+         Audio Transcript
+
+
+   The video password is: Kepler71         [Netmiko Videos]
+
+    VIII. Netmiko Overview
+         Video https://vimeo.com/293428746
+         Length is 9 minutes
+         Audio Transcript
+
+    IX. Netmiko send_command()
+         Video https://vimeo.com/293439333
+         Length is 6 minutes
+         Audio Transcript
+
+
+
+
+Collateral Material (programs used in the videos):
+
+In collateral, I try to provide the Python programs shown in the videos. In other words, I try to make it easy for you to reproduce the examples from the videos.
+
+Class1 Collateral Programs
+
+
+
+
+Git Resources
+
+GitHub Cheatsheet
+
+Good Tutorial on Git
+
+Git Handling Merge Conflicts
+
+Very good article explaining Git:
+Git Concepts Simplified
+
+
+
+Netmiko Resources
+
+Netmiko Readme
+
+​
+
+
+​Exercises:
+
+My solutions to the exercises can be found at:
+
+Class1 Reference Solutions
+
+
+
+GIT
+1. Create a GitHub account (it's free for public repositories).
+
+2. Create a new repository in GitHub for this class. Add a README file and a Python .gitignore file.
+
+3. Clone the repository that you just created on GitHub into your home directory in the lab environment.
+
+4. Configure your name and email address on the lab server:
+$ git config --global user.name "John Doe"
+$ git config --global user.email jdoe@domain.com
+
+5. Add and commit three files into your repository in the lab environment. Use 'git status' to verify that all your changes have been committed and that you are working on the 'master' branch.  Push these changes up to GitHub.
+
+6. Create a 'test' branch in your repository.
+    a. Ensure that you are working on the 'test' branch.
+    b. Add two directories to the 'test' branch. Each directory should contain at least one file. These files should be committed into the 'test' branch.
+    c. Use 'git log' to look at your history of commits.
+    d. Modify one of your previously committed files. Use 'git diff' to look at the pending changes in this file. Add and commit these changes.
+
+7. Push the 'test' branch up to GitHub.
+
+8. Create a Pull Request inside of GitHub (pull request that would merge the 'test' branch into the 'master' branch). Look at the 'files changed' in the pull request. Merge the pull request.
+
+9. Back on your AWS server
+    a. Switch back to the 'master' branch.
+    b. Use a 'git pull' to retrieve all of the updates from GitHub on the master branch.
+    c. Verify your 'master' branch now has all of the changes that you had previously made in the 'test' branch.
+
+10. In the 'master' branch use 'git rm' to remove some file from the branch. Commit this change.
+
+11. Edit one of your files. Once again use 'git diff' to look at the change pending in that file. Use 'git checkout -- <file>' to discard that pending change. Verify your 'git status' is now clean.
+
+12. In GitHub, edit the README.md file and commit a change to the 'master' branch in GitHub. On the lab server also edit the README.md file and commit the change into the lab server. Use 'git pull' to pull the 'master' branch from GitHub into the lab server. At this point you should have a merge conflict. It should look something like this:
+$ git pull origin master
+From https://github.com/ktbyers/pyneta
+ * branch            master     -> FETCH_HEAD
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Automatic merge failed; fix conflicts and then commit the result.​
+
+Edit the README.md file to correct the merge conflict. The README.md file should have something like the following inside of it:
+
+​$ cat README.md
+# pyneta
+Test PyNet Repository
+
+Some additional information on this repository.
+
+<<<<<<< HEAD
+Create a merge conflict.
+=======
+More changes to readme.
+>>>>>>> 1690ce5a6ddb640198ccf3bca26f32a65d772b92
+
+The ​'<<<<<', '=====', '>>>>>' indicate where the inconsistencies on the file are. Git is basically stating I have this first line(s) from one change and this second line(s) from another change and I don't know which one you want to keep. Which line do you want to keep (could be one of the lines, both of the lines, none of the lines).
+
+Here is how I fixed the merge conflict in the above file:
+$ cat README.md
+-----------------
+# pyneta
+Test PyNet Repository
+
+Some additional information on this repository.
+
+Create a merge conflict.
+
+More changes to readme.​
+-----------------
+
+# Then I need to add and commit the file
+$ git add README.md
+$ git commit -m "Fixing merge conflict"
+[master e87901a] Fixing merge conflict
+
+
+Netmiko
+
+1. In the lab environment use Netmiko to connect to one of the Cisco NX-OS devices. You can find the IP addresses and username/passwords of the Cisco devices in the 'Lab Environment' email or alternatively in the ~/.netmiko.yml file. Simply print the router prompt back from this device to verify you are connecting to the device properly.
+
+2. Add a second NX-OS device to your first exercise. Make sure you are using dictionaries to represent the two NX-OS devices. Additionally, use a for-loop to accomplish the Netmiko connection creation. Once again print the prompt back from the devices that you connected to.
+
+3. For one of the Cisco IOS devices, use Netmiko and the send_command() method to retrieve 'show version'. Save this output to a file in the current working directory.
+
+
+
+
+
+
+
+Regards,
+
+Kirk
+To make sure you keep getting these emails, please add support@twb-tech.com to your address book or whitelist us. Want out of the loop? Unsubscribe.
+
+Our postal address: Twin Bridges Technology, 88 King Street #1217, San Francisco, CA 94107

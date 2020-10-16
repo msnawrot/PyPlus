@@ -1,0 +1,145 @@
+git is a version repository
+  why care about version control?
+    we get more into automation
+      ansible
+      python
+    move infrastructure in a programmatic way; a workflow similar to what programmers are doing
+    check changes into version control
+      triggers set of tests: unit, works with other systems properly, inventory management
+      ci/cd workflow
+fundamentals
+  historically version control takes snapshot of files, and calculates diffs over time.
+  git works differently; keeps track of files, directories across time and stored in git repository
+    generally additive, generally not removing things from the repository
+  repo has all files and folders
+    some deduplication
+    in essence, correct, with context: who made change and purpose of changes
+  git is 'swapping between different snapshots'
+    one snapshot for dev, one for prod, and one for a project not sure will go
+
+
+  2
+  getting started
+  git is distributed - no notion of primary server.
+  each copy of repository is it's own independent entity, no need to sync to master server.
+  via workflows you can make a master server, but git doesn't have a master server baked in
+  peer-to-peer
+  git vs github.  github is a saas app that is very popular with online git repos.
+  a lot of times, use github as being the central server.
+
+  at directory
+  nothing initialized yet, so
+  mkdir git-test
+  cd git-test
+  git init
+  "initialized empty git repo in..."
+  ls -la
+  see .git, meaning subdir is created. like a project folder, holds the repo contents
+  git status
+
+  "branches" "views into files" default name was master, and now is main
+  view prod...view lab
+  across time, run a merge operation
+  git branch command
+(makes some files)
+git status
+  'tracking state' untracked
+  git add test1.py - to track
+  git add test2.py - to track
+  'staged'
+two step process - add/remove stuff to make changes, then commit to save those changes
+'staged' is status that means going to include in next commit
+git config --global user.email "foo@foo.com"
+git config --global user.name "your name"
+git commit -m "Making first commit of files" # -m flag to set a comment
+git status
+git has 3 views of files, working directory, staging, repository (.git)
+git branch - see the branches
+git diff
+git add *.py
+git status
+git log - history of commits, comments; commits are hashes.
+
+3) git adding and removing files
+cd git-test/
+git status # clean
+make new folder and two new files in working directory
+git status, see untracked dir.
+git add (dir)
+the files in the dir. automatically added
+git rm test3.py # remove the file from the working directory, on commit, removes from repo.
+
+4) git - push and pull
+first, how to create a repository on github. free if public.  private repo is $/mo.
+github.com
++ sign , name repo , make public, init readme,
+.gitignore defines files you don't care about, so in python, ignore .pyc files. can also put passwords and keys Here
+can state license if open source project
+auto creates master/main branch
+can copy the URL and then
+git clone <URL>
+tree command = see all the things in the git repository
+(add files)
+git add test*.py
+git commit -m "adding a couple of Python files"
+git status - this git on the hard drive isn't sync'd with github.  github doesn't know this commit.
+use git push origin
+what is origin? when git clone, setup a remote with this aws machine and where we cloned from, the URL
+that's the name origin in most cases.
+git push origin master = push to the master branch on github.
+refresh the github web page, and see the new commit.
+update contents of file with github webpage.  on the test machine, now...
+git pull origin master
+
+after creating a repo locally, wanting to 'clone it to github,' I followed these lines:
+https://www.techrepublic.com/article/how-to-push-a-new-project-to-github/
+git remote add origin https://github.com/USER/PROJECTNAME.git
+git push -u origin master
+but then on github, I had a branch named main and another branch named master.  Seems that local init or repo uses the default
+branch name master, still.
+so, in the end, I copied a backup of each file to another folder, deleted the folder PythonHard, deleted the branch Master on github, and git clone the original main branch from github.
+finally, I copied all the backups of the files back into PythonHard directory, commit, and push. done.
+
+
+5) git - Branches
+a few techniques to discard changes
+if state is tracked, to untrack, "git restore <filename>"
+if state is modified, to revert changes in local dir, "git restore <filename>"
+git stash = to discard a bunch of changes...can retrieve from git stash later, but in practice not so much
+git checkout -b devel main = creates a new branch called devel based off main, and automatically switches to the new branches
+git checkout <branch_name> = switches between Branches
+
+6) git rebase master (or main) - first git checkout 'another branch' and then git rebase main to merge the other branch into main branch
+can do merge in github or at cli.
+git merge devel (or some other branch) to merge the devel branch with main.  all the changes on devel come into main
+
+rebase - many times I make a copy of a repo,
+github - to fork, fork button in top right corner - git clone and copies the code to your user account in github.
+fork button on another person's project.  the project can continue with more commits, but the fork remains out of date (i.e. doesn't get the updates automatically)
+
+git remote -v
+to get your copy of a given repository up to date is to use the rebase
+how to rebase:
+git remote -v (to check origin)
+git fetch origin (to get updates to all branches in repo) NOTE: it doesn't automatically pull the changes to your local repo.  git status tells you you should pull b/c your branch is behind the origin/main branch
+check each branches - git checkout 'branch'
+in that branch... git rebase origin/2.0
+
+7) git - common workflow
+starts in a directory
+git clone https://github.com/ktbyers/netmiko
+which makes a netmiko folder - that's the Repository
+git branch = develop is the main branch
+then, he likes to make a prod/master branch and a develop branch, and often do pulls from the develop branch into prod for a new release
+git branch -r = look at the remote branches
+he wanted to get the origin/master branch
+git checkout -b master origin/master
+then git branch to see the new branch
+in general he keeps his branches up to date (rebase them as needed) so always in sync with GitHub
+when troubleshooting or creating a new feature...
+git checkout -b test_feature1 origin/develop (using origin/develop means he is starting at the latest code on github)
+after testing, eventually he does a push request on test_feature1 into github,
+and then a pull request on this branch into develop - so can see all changes in one go before merging into develop branch
+then a whole bunch of feature adds and bug fixes, and then in github, merge develop into master
+and across time he would be rebasing his develop into his work computer
+can tell git to completely ignore certain files - confidential information, passwords.
