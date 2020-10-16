@@ -20,5 +20,5 @@ nxos2 = {
 routers = [nxos1, nxos2]
 
 for router in routers:
-    c = ConnectHandler(**router, session_log = './w1ex3.log.txt')
+    c = ConnectHandler(**router)
     c.send_command('show version')
