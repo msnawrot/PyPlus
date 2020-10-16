@@ -5,7 +5,7 @@ nxos1 = {
   'device_type': 'cisco_nxos',
   'host': 'nxos1.lasthop.io',
   'username': 'pyclass',
-  'password': getpass('for nxos1'),
+  'password': getpass('Password for nxos1: '),
 }
 
 nxos2 = {
