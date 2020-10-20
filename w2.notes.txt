@@ -1,0 +1,91 @@
+1) Netmiko Handling Additional prompts
+some commands don't give back the usual router prompt, such as deleting a file from flash,
+which wants a confirmation yes/no.
+how can we make our script deal with unusual prompts?
+device1 = {dictionary of details}
+net_connect = ConnectHandler(**device1)
+command = 'delete flash:/cisco_file.txt'
+output = net_connect.send_command(command, expect_string=r'confirm')
+output += net_connect.send_command('y', expect_string=r'#')
+expect_string is regex pattern.
+symptoms = getting timeout error waiting for router prompt.
+looks even better doing the following:
+first, know that netmiko will by default strip the prompt & command from output.
+net_connect.send_command(foo, expect_string=r'bar', strip_prompt=False, strip_command=False)
+
+another way we can do this without using the expect_string is to use .send_command_timing
+it tries to determine a command is done by waiting 'long enough.'
+net_connect.send_command_timing(command, strip_prompt=False, strip_command=False)
+net_connect.send_command_timing('y', strip_prompt=False, strip_command=False)
+
+
+2) Netmiko Delay Factor
+global delay factor and delay Factor
+problem with screen scraping in general - when has the thing we're doing been done?
+Netmiko two fundamental solutions are global delay factor and delay factor.
+global delay factor is a multiplier of delays built into netmiko,
+you set global delay factor in the dictionaty/ConnectHandler input - "global_delay_factor"
+*if when you connect to a device it sometimes works and sometimes doesn't, and it has errors:
+unable to find the command prompt, unable to find generated output.
+another way:  net_connet = ConnectHandler(host="cisco1.lasthop.io", etc., global_delay_factor=2)
+
+alternatively, to delay just a single command:
+output = net_connect.send_command("show ip int brief", delay_factor=5)
+
+and for very long running commands, specify not only the delay_factor, but also the max_loops
+output = net_connect.send_command("show ip int brief", delay_factor=10, max_loops=1000)
+do this when delay factor hits level 10 or above
+
+if one script uses delay_factor and globa_delay_factor, then the larger number takes precedence.
+
+3) Netmikko and TextFSM
+what we generally get back from netmiko is a block of text.  we want the block of text to be structured data, such as lists
+could write own regex parsing, use napalm, or us textfsm.
+textfsm is a regular expression state machine = a complex regex parser.
+a set of people have already created textfsm templates, which we can couple with netmiko output.
+
+ntc-templates
+git clone into Environment
+he cloned to his home directory
+there is an index file with all the templates available
+a template has exactly one platform and one command, each
+if clone to home dit, netmiko will know where to find them
+else make environment var EXTFSM=/path/to/ntc-templates/templates
+
+to use within a method:
+output = net_connect.send_command("show ip int brief", use_textfsm=True)
+if text_fsm doesn't work, say it cannot find a template, then the netmiko output will be strings
+he then goes on to show how, with ipython -i 'script_name.py', he was able to walk through a data structure easily
+in this case, the data structure was a list filled with dictionaries.
+used: from pprint import pprint
+and then pprint(output) to get the list-dictionary printing out organized by whitespace
+I point out output[4]['ipaddr'] is the same as the list output's 4th place, which is a dictionary, and give me the value for 'ipaddr'
+
+4) Netmiko and Config changes
+script:
+cfg = 'logging buffered 20000'
+output = net_connect.send_config_set(cfg)
+print(output)
+
+what if we have a set of changes? send a list of commands instead of a single string
+cfg = [
+    'logging buffered 20000',
+    'no logging console',
+    'clock timezone EST -50',
+]
+# .send_config_set command doesn't change
+output = net_connect.send_config_set(cfg)
+print(output)
+
+another option for sending a set of changes is to send .send_config_from_file a file
+one command per line, no punctuation.  eg:
+logging buffered 10000
+no logging console
+clock timezone PST -8 0
+<end>
+script:
+output = net_connect.send_config_from_file(config_file='config_file.txt')
+
+common issues with config Changes
+1) sending the wrong commands.  netmiko will give back whatever the router says, like "invalid input detected"
+2) issues with very large set of commands, where netmiko starts to get really slow. netmiko 2.3.x should be faster when pushing changes.

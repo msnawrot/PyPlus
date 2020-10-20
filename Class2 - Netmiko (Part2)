@@ -1,0 +1,155 @@
+​Videos:
+
+     The video password is: Kepler71
+
+      I. Netmiko Handling Additional Prompts
+         Video https://vimeo.com/293443451
+         Length is 7 minutes
+         Audio Transcript
+
+      II. Netmiko Delay Factor
+         Video https://vimeo.com/293450824
+         Length is 7 minutes
+         Audio Transcript
+
+      III. Netmiko and TextFSM
+         Video https://vimeo.com/294014964
+         Length is 6 minutes
+         Audio Transcript
+
+      IV. Netmiko and Config Changes
+         Video https://vimeo.com/294018818
+         Length is 9 minutes
+         Audio Transcript
+
+    V. Netmiko and Secure Copy
+         Video https://vimeo.com/295082722
+         Length is 7 minutes
+         Audio Transcript
+
+    VI. Netmiko save_config(), keys, and fast_cli
+         Video https://vimeo.com/294235259
+         Length is 8 minutes
+         Audio Transcript
+
+    VII. Netmiko Misc Topics
+         Video https://vimeo.com/294241575
+         Length is 9 minutes
+         Audio Transcript
+
+
+
+
+Collateral Material (programs used in the videos):
+
+In collateral, I try to provide the Python programs shown in the videos. In other words, I try to make it easy for you to reproduce the examples from the videos.
+
+Class2 Collateral Programs
+
+
+
+
+
+Netmiko Resources
+
+Netmiko Tutorial
+
+Netmiko and TextFSM
+
+Netmiko and What Constitutes Done
+
+Netmiko SSH Proxy Support
+​
+
+
+
+​Exercises:
+
+My solutions to the exercises can be found at:
+
+Class2 Reference Solutions
+
+
+1. Use the extended 'ping' command and Netmiko on the 'cisco4' router. This should prompt you for additional information as follows:
+
+cisco4#ping
+Protocol [ip]:
+Target IP address: 8.8.8.8
+Repeat count [5]:
+Datagram size [100]:
+Timeout in seconds [2]:
+Extended commands [n]:
+Sweep range of sizes [n]:
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/4 ms
+
+a. Use send_command_timing() to handle the additional prompting from this 'ping' command. Specify a target IP address of '8.8.8.8'
+
+b. Use send_command() and the expect_string argument to handle the additional prompting. Once again specify a target IP address of '8.8.8.8'.
+
+
+2. Create a Netmiko connection to the 'nxos2' device using a global_delay_factor of 2. Execute 'show lldp neighbors detail' and print the returned output to standard output. Execute 'show lldp neighbors detail' a second time using send_command() with a delay_factor of 8. Print the output of this command to standard output. Use the Python datetime library to record the execution time of both of these commands. Print these execution times to standard output.
+
+
+3. On your AWS lab server, look at the ntc-templates index file (at ~/ntc-templates/templates/index). Look at some of the commands available for cisco_ios (you can use 'cat ~/ntc-templates/templates/index | grep cisco_ios' to see this). Also look at some of the abbreviated forms of Cisco IOS commands that are supported in the index file.
+
+Create a script using Netmiko that executes 'show version' and 'show lldp neighbors' against the Cisco4 device with use_textfsm=True.
+
+What is the outermost data structure that is returned from 'show lldp neighbors' (dictionary, list, string, something else)? The Cisco4 device should only have one LLDP entry (the HPE switch that this router connects to). From this LLDP data, print out the remote device's interface. In other words, print out the port number on the HPE switch that Cisco4 connects into.
+
+
+4. Use Netmiko and the send_config_set() method to configure the following on the Cisco3 router.
+
+ip name-server 1.1.1.1
+ip name-server 1.0.0.1
+ip domain-lookup
+
+Experiment with fast_cli=True to see how long the script takes to execute (with and without this option enabled).
+
+Verify DNS lookups on the router are now working by executing 'ping google.com'. Verify from this that you receive a ping response back.
+
+
+5. On both the NXOS1 and NXOS2 switches configure five VLANs including VLAN names (just pick 5 VLAN numbers between 100 - 999). Use Netmiko's send_config_from_file() method to accomplish this. Also use Netmiko's save_config() method to save the changes to the startup-config.
+
+
+6. Using SSH and netmiko connect to the Cisco4 router. In your device definition, specify both an 'secret' and a 'session_log'. Your device definition should look as follows:
+​password = getpass()
+device = {
+    "host": "cisco4.lasthop.io",
+    "username": "pyclass",
+    "password": password,
+    "secret": password,
+    "device_type": "cisco_ios",
+    "session_log": "my_output.txt",
+}
+Execute the following sequence of events using Netmiko:
+a. Print the current prompt using find_prompt()
+
+b. Execute the config_mode() method and print the new prompt using find_prompt()
+
+c. Execute the exit_config_mode() method and print the new prompt using find_prompt()
+
+d. Use the write_channel() method to send the 'disable' command down the SSH channel. Note, write_channel is a low level method so it requires that you add a newline to the end of your 'disable' command.
+
+e. time.sleep for two seconds and then use the read_channel() method to read the data that is currently available on the SSH channel. Print this to the screen.
+
+f. Execute the enable() method and print your now current prompt using find_prompt(). The enable() method will use the 'secret' defined in your device definition. This 'secret' is the same as the standard lab password.
+
+g. After you are done executing your script, look at the 'my_output.txt' file to see what is included in the session_log.
+
+
+Notes: both the send_config_set() and send_config_from_file() methods automatically enter and exit config mode; consequently, you don't typically need to control this yourself. The write_channel() and read_channel() methods can be useful if you need to make a custom solution to write/read the SSH channel in some way. The session_log can be very helpful for debugging Netmiko issues to see what occurred during the SSH session.
+
+
+
+
+
+
+Regards,
+
+Kirk
+To make sure you keep getting these emails, please add support@twb-tech.com to your address book or whitelist us. Want out of the loop? Unsubscribe.
+
+Our postal address: Twin Bridges Technology, 88 King Street #1217, San Francisco, CA 94107
