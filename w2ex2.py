@@ -3,7 +3,7 @@ from getpass import getpass
 import datetime
 
 nxos2 = {
-    'hostname': 'nxos2.lasthop.io',
+    'host': 'nxos2.lasthop.io',
     'username': 'pyclass',
     'device_type': 'cisco_nxos',
     'password': getpass("Password: ")
