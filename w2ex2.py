@@ -6,10 +6,11 @@ nxos2 = {
     'host': 'nxos2.lasthop.io',
     'username': 'pyclass',
     'device_type': 'cisco_nxos',
-    'password': getpass("Password: ")
+    'password': getpass("Password: "),
+    'global_delay_factor': 2
 }
 
-connection=ConnectHandler(**nxos2, global_delay_factor=2)
+connection=ConnectHandler(**nxos2)
 start1 = datetime.datetime.now()
 output1 = connection.send_command("show lldp neighbors detail")
 print(output1)
