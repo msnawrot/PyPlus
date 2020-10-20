@@ -2,7 +2,7 @@ from netmiko import *
 from getpass import getpass
 import datetime
 
-nsox2 = {
+nxos2 = {
     'hostname': 'nxos2.lasthop.io',
     'username': 'pyclass',
     'device_type': 'cisco_nxos',
