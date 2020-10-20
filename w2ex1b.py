@@ -3,7 +3,7 @@ from getpass import getpass
 
 router = {
     'device_type': 'cisco_ios',
-    'host': 'cisco4',
+    'host': 'cisco4.lasthop.io',
     'username': 'pyclass',
     'password': getpass('Password for router: ')
 }
