@@ -15,7 +15,7 @@ cfg = [
     'ip domain-lookup'
 ]
 start1 = datetime.datetime.now()
-net_connect = ConnectHandler(**router)
+net_connect = ConnectHandler(**router, fast_cli=True)
 output = net_connect.send_config_set(cfg)
 end1 = datetime.datetime.now()
 elapsed1 = end1 - start1
