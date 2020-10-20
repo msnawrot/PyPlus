@@ -19,3 +19,4 @@ output = net_connect.send_config_set(cfg)
 end1 = datetime.datetime.now()
 elapsed1 = end1 - start1
 print(elapsed1)
+print(output)
