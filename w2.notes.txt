@@ -47,9 +47,9 @@ a set of people have already created textfsm templates, which we can couple with
 ntc-templates
 git clone into Environment
 he cloned to his home directory
-there is an index file with all the templates available
+there is an index file with all the templates available; ntc-templates/templates/index
 a template has exactly one platform and one command, each
-if clone to home dit, netmiko will know where to find them
+if clone to home dir, netmiko will know where to find them
 else make environment var EXTFSM=/path/to/ntc-templates/templates
 
 to use within a method:

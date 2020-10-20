@@ -16,14 +16,12 @@ output1 = connection.send_command("show lldp neighbors detail")
 print(output1)
 end1 = datetime.datetime.now()
 elapsed1 = end1 - start1
-elapsed1 = divmod(elapsed1.days * 86400 + elapsed1.seconds, 60)
-print('Process completed in %s minutes %s seconds' % (str(elapsed1[0]), str(elapsed1[1])))
+print(elapsed1)
 
 start2 = datetime.datetime.now()
 output2 = connection.send_command("show lldp neighbors detail", delay_factor=8)
 print(output2)
 end2 = datetime.datetime.now()
 elapsed2 = end2 - start2
-elapsed2 = divmod(elapsed2.days * 86400 + elapsed2.seconds, 60)
-print('Process completed in %s minutes %s seconds' % (str(elapsed2[0]), str(elapsed2[1])))
+print(elapsed2)
 connection.disconnect()
