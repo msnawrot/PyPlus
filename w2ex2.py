@@ -5,7 +5,7 @@ import datetime
 nsox2 = {
     'hostname': 'nxos2.lasthop.io',
     'username': 'pyclass',
-    'device_type': 'cisco_nxos'
+    'device_type': 'cisco_nxos',
     'password': getpass("Password: ")
 }
 
