@@ -24,7 +24,7 @@ global delay factor and delay Factor
 problem with screen scraping in general - when has the thing we're doing been done?
 Netmiko two fundamental solutions are global delay factor and delay factor.
 global delay factor is a multiplier of delays built into netmiko,
-you set global delay factor in the dictionaty/ConnectHandler input - "global_delay_factor"
+you set global delay factor in the dictionary/ConnectHandler input - "global_delay_factor"
 *if when you connect to a device it sometimes works and sometimes doesn't, and it has errors:
 unable to find the command prompt, unable to find generated output.
 another way:  net_connet = ConnectHandler(host="cisco1.lasthop.io", etc., global_delay_factor=2)
