@@ -1,5 +1,7 @@
 from netmiko import *
 from getpass import getpass
+from pprint import pprint
+
 
 router = {
     'device_type': 'cisco_ios',
@@ -10,6 +12,6 @@ router = {
 
 net_connect = ConnectHandler(**router)
 output = net_connect.send_command('show version', use_textfsm=True)
-output += "\n\n\n\n"
+print(type(output))
 output += net_connect.send_command('show lldp neighbors', use_textfsm=True)
 print(output)
