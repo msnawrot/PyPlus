@@ -13,5 +13,6 @@ router = {
 net_connect = ConnectHandler(**router)
 output = net_connect.send_command('show version', use_textfsm=True)
 print(type(output))
-output += net_connect.send_command('show lldp neighbors', use_textfsm=True)
+print(type(output[0]))
 print(output)
+pprint(net_connect.send_command('show lldp neighbors', use_textfsm=True))
