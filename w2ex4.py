@@ -1,5 +1,5 @@
 from netmiko import *
-import getpass
+from getpass import getpass
 import datetime
 
 router = {
