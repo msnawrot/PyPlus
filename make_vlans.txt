@@ -1,8 +1,8 @@
 vlan 1001
-name Luke Skywalker
+name Luke_Skywalker
 vlan 1002
-name Leia Skywalker
+name Leia_Skywalker
 vlan 1003
-name Anakin Skywalker
+name Anakin_Skywalker
 vlan 1004
-name Rey Skywalker
+name Rey_Skywalker

@@ -30,6 +30,7 @@ for router in routers:
         print(f"successfully sent config to device, {router['host']}.")
     if net_connect.save_config():
         print(f"successfully saved to startup config on {router['host']}.")
+    net_connect.disconnect()
     end = datetime.datetime.now()
     elapsed = end - begin
     print("It took this long to complete. : ", elapsed)
