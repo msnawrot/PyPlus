@@ -9,14 +9,14 @@ nxos1 = {
     'host' : 'nxos1.lasthop.io',
     'username' : 'pyclass',
     'password' : password,
-    'devie_type' : 'cisco_nxos'
+    'device_type' : 'cisco_nxos'
 }
 # nxos2 (NX-OSv Switch)
 nxos2 = {
     'host' : 'nxos2.lasthop.io',
     'username' : 'pyclass',
-    'password' : password
-    'devie_type' : 'cisco_nxos'
+    'password' : password,
+    'device_type' : 'cisco_nxos'
 }
 
 routers = [nxos1, nxos2]
