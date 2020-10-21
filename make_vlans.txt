@@ -1,10 +1,8 @@
-vlan 100
-name vlan_100
-vlan 101
-name vlan_101
-vlan 102
-name vlan_102
-vlan 103
-name vlan_103
-vlan 104
-name vlan_104
+vlan 1001
+name Luke Skywalker
+vlan 1002
+name Leia Skywalker
+vlan 1003
+name Anakin Skywalker
+vlan 1004
+name Rey Skywalker
