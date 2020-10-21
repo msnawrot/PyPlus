@@ -22,10 +22,14 @@ nxos2 = {
 routers = [nxos1, nxos2]
 
 for router in routers:
+    begin = datetime.datetime.now()
     net_connect = ConnectHandler(**router)
     output = net_connect.send_config_from_file('make_vlans.txt')
     if len(output) > 0:
+        print(output)
         print(f"successfully sent config to device, {router['host']}.")
-    print(output)
     if net_connect.save_config():
         print(f"successfully saved to startup config on {router['host']}.")
+    end = datetime.datetime.now()
+    elapsed = end - begin
+    print("It took this long to complete. : ", elapsed)
