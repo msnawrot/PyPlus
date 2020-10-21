@@ -36,7 +36,7 @@ and for very long running commands, specify not only the delay_factor, but also 
 output = net_connect.send_command("show ip int brief", delay_factor=10, max_loops=1000)
 do this when delay factor hits level 10 or above
 
-if one script uses delay_factor and globa_delay_factor, then the larger number takes precedence.
+if one script uses delay_factor and global_delay_factor, then the larger number takes precedence.
 
 3) Netmikko and TextFSM
 what we generally get back from netmiko is a block of text.  we want the block of text to be structured data, such as lists
@@ -89,3 +89,70 @@ output = net_connect.send_config_from_file(config_file='config_file.txt')
 common issues with config Changes
 1) sending the wrong commands.  netmiko will give back whatever the router says, like "invalid input detected"
 2) issues with very large set of commands, where netmiko starts to get really slow. netmiko 2.3.x should be faster when pushing changes.
+
+5) Netmiko and Secure Copy
+netmiko has ability to do scp
+example code to accomplish:
+
+from netmiko import ConnectHandler, file_transfer
+...
+source_file = "testx.txt"
+dest_file = "testx.txt"
+direction = "put"
+file_system = "bootflash:"
+
+# Create the Netmiko SSH connection before using file_transfer
+ssh_conn = ConnectHandler(**nxos1)
+transfer_dict = file_transfer(
+    ssh_conn,
+    source_file=source_file,
+    dest_file=dest_file,
+    file_system=file_system,
+    direction=direction,
+    overwrite_file=True,
+)
+print(transfer_dict)
+
+there is an ssh control channel, and a separate data channel
+it'll automaticaly:
+check if there is sufficient space available
+check if the filename already exists - and we have a flag to allow for overwrite
+file check is based on md5 hash, to make sure the file transfer is transferred correctly
+so: if exists, and
+   if md5 matches
+      then say the file exists and there is nothing to do
+the transfer dictionary:
+keys:
+file_exists: t or f
+file_transferred: t or f
+file_verified: t or f
+direction can be get or put
+gotchas: transfer takes so long, the SSH session times out.  So to get around, ensure vty timeout is > file transfer time
+trying to transfer via a proxy (bastion host).  on IOS, can toggle in-line transfer mode (tranfer happens inside an SSH session, and will work through a bastion host)
+  thing is, in-line transfer only works for text files, not binary files
+there is a limit to the number of platforms that support file_transfer()
+asa, ios, etc. 9 total
+
+
+6) Netmiko and save_config(), keys, and fast_cli
+save_config() writes running config to startup config_file.  should be supported broad range of platforms on Netmiko
+how to do an ssh key authentication
+he's using an ios device.  a local user with a keypair assigned; this is the hard part
+
+code ex.
+from netmiko import ConnectHandler
+device1 ={
+    "device_type": 'cisco_ios',
+    "host": 'cisco1.lasthop.io',
+    "use_keys": True,
+    "key_file": '/home/kbyers/.ssh/test_rsa'
+}
+...the rest of the script is the same as always
+there is a way to use ssh proxy, and an article on netmiko and sshproxy.  works fairly well if on non-windows
+"netmiko sshproxy"
+
+fast_cli - use this in a ConnectHandler() call directly or with a dictionary
+when you make it True, then the delay_factor is < 1 and the smaller value takes precedence vs global_delay_factor
+
+
+7)
