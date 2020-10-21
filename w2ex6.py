@@ -7,7 +7,7 @@ device = {
     "username": "pyclass",
     "password": password,
     "secret": password,
-    "device_type": "cisco_ios"
+    "device_type": "cisco_ios",
     "session_log": "my_output.txt"
 }
 
