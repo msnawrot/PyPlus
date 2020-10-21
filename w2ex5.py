@@ -1,6 +1,6 @@
 from netmiko import *
 from getpass import getpass
-from datetime
+import datetime
 
 password = getpass("Type in the password:  ")
 
