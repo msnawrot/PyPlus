@@ -15,7 +15,7 @@ nxos2 = {
     'host' : 'nxos2.lasthop.io',
     'username' : 'pyclass',
     'password' : password
-​​​​​​​}
+}
 
 routers = [nxos1, nxos2]
 
