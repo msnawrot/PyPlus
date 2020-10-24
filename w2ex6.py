@@ -12,6 +12,11 @@ device = {
     "session_log": "my_output.txt"
 }
 
+def wr_channel(string)
+    ssh_conn.write_channel(command)
+    time.sleep(4.0)
+    return ssh.conn.read_channel()
+
 # open an ssh session with netmiko
 ssh_conn = ConnectHandler(**device)
 print(ssh_conn.find_prompt())
@@ -19,9 +24,10 @@ print(ssh_conn.config_mode())
 print(ssh_conn.find_prompt())
 print(ssh_conn.exit_config_mode())
 print(ssh_conn.find_prompt())
-ssh_conn.write_channel('disable\n')
-print("Waiting two seconds...")
-time.sleep(2.0)
+print(wr_channel('disable\n'))
+# ssh_conn.write_channel('disable\n')
+# print("Waiting two seconds...")
+# time.sleep(2.0)
 print(ssh_conn.read_channel())
 print(ssh_conn.enable()) #this method requires the secret key in the device dictionary
 print(ssh_conn.find_prompt())

@@ -1,0 +1,75 @@
+1) complex data structures
+complex data structures refers to list of list or list of dict, etc.  nested data structures, and they can be nested in different ways.
+examples:
+dictionary inside a list
+ can always do type() on it to verify
+ next up, he checks the number of entries in the list, with len()
+ if it's only one element in the list, he'll look at it with print(arp[0])
+ else, he'll write this code to look through the data structure:
+for arp_entry in arp:
+    print(arp_entry)
+    break # because he wants to keep it simple for now, look at only one element.
+that gives him the keys of this dict, then he breaks that up with print statements:
+for arp_entry in arp:
+    print(arp_entry['mac'])
+    print(arp_entry['ip'])
+    break
+then he runs it without the break to look at all the results
+first example was from napalm, and this next is from Arista EAPI
+interfaces data structure...
+print(interfaces) = very large
+first, what is outtermost?  type(interfaces)
+then, len(interfaces), only one entry,
+so pop that element off...
+new_interfaces = interfaces[0]
+print(new_interfaces)
+type(new_interfaces) ...it is a dictionary
+want to look at keys
+print(new_interfaces.keys())
+then he looks at each key:
+print(new_interfaces['result'])
+save that into a new data structure, peeling the complex data structure back one layer at a time.
+new_interfaces = new_interfaces['result']
+once you figure out what you need, then create a function to do the lookup for you
+once again, check type and length, and then print out that...
+this example is %s layers % '6 or more'
+get this example...
+for intf_name, intf_value in new_interfaces.items():
+    print(intf_name, end='')
+    print("\t" + intf_value['interfaceStatus']) # 'interfaceStatus' is a key
+peeling the complex data structure back one layer at a time.
+this example is %s layers % '6 or more'
+reconstruct all of this into a function...
+use the vi history command
+
+new_interfaces = interfaces[0]['result']['interfaces']
+
+for intf_name, intf_value in new_interfaces.items():
+    print(intf_name)
+    print(intf_value['interfaceStatus']
+    print()
+
+2) Changing Data Structure Format
+something you'll do alot is change one complex data structure into another.
+if a dict, look at keys
+pick one of those keys, and print it out
+innermost to outtermost:
+strings, inner dictionary, list, outer dictionary
+lldp = {'outer key' : [{'inner key' : 'str'}]}
+want a structure like:
+[{}, {}, {}]  each dictionary is an interface. a list of dictionaries.
+think of simplifying the problem.
+make a program of it:
+new_list = list()
+for intf_name, lldp_data in lldp.items(): # items is a dict method, returns a list of tuple pairs
+    lldp_data = lldp_data[0] # strip off the top list
+    new_entry = {
+        "intf_name": intf_name,
+        "remote_port": lldp_data['remote_port'],
+    }
+    new_list.append(new_entry)
+print()
+pprint(new_list)
+print()
+
+he cannot stress enough to use the break to look at the first entry, as you build
