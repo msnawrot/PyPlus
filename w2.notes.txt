@@ -155,4 +155,19 @@ fast_cli - use this in a ConnectHandler() call directly or with a dictionary
 when you make it True, then the delay_factor is < 1 and the smaller value takes precedence vs global_delay_factor
 
 
-7)
+7) misc topics
+if you make a net_connect called net_connect, then you can run dir(net_connect) and see all the methods available
+tons!!
+like commit, config_mode, write_channel, etc.etc.  TONS!
+for more in-line help, help(net_connect.config_mode)
+low-level usage of the ssh channel.  when doing write_channel, must terminate string with \n
+net_connect.write_channel("show ip int brief\n")
+(need to have a sleep time in script before...)
+net_connect.read_channel() # to get the output 
+netmiko does support telnet for a certain number of platforms - check ssh_dispatcher.py and look for 'telnet'
+limited set vs ssh
+general format is vendor_os_telnet - use this in the device's dict.
+terminal server driver - it doesn't do any of the post auth steps (pager, terminal width)
+you would connect to the terminal server, then use write_channel to send some commands to the terminal server.
+once fully logged into the end device via console port, can use redispatch to switch the device_type to that of the end device.
+netmiko github issues should have an example to use this process.
