@@ -73,3 +73,92 @@ pprint(new_list)
 print()
 
 he cannot stress enough to use the break to look at the first entry, as you build
+
+3) Serialization
+actually the first video to talk about YAML.
+YAML, JSON...why do we need these things?
+...so we are taking these things that are inside programs and serializing them out into a string of bytes.
+either written to a file or across a Network
+must be done in a standardized way, so that other computers can understand what this data is.
+we need serialization protocols, and YAML and JSON are two popular ones
+a lot of web apps, api's, use JSON, for computer to computer communications.
+not super easy for humans to write.
+YAML is much easier for humans to read & write it.
+Ansible, Salt, an inventory of devices are YAML.
+what does YAML look like?
+look.yml
+first line of this file is three hyphens
+---
+YAML indentation critical, even compared to python
+want a list?
+- router1
+- router2
+- router3
+- router4
+save it. make a python script:
+import yaml
+filename = input("Enter filename: ")
+with open(filename) as f:
+    yaml_out = yaml.load(f)
+print(yaml_out)
+what gets printed out is in list syntax:
+['router1', 'router2', 'router3', 'router4']
+you can also: yaml_out[0]
+'router1'
+type(yaml_out)
+list
+
+4) YAML
+what if we want to create a dictionary in yaml?
+---
+key1: value1
+key2: value2
+key3: value3
+
+print(yaml_out) looks like:
+{'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
+could yaml_out.keys()
+or yaml_out['key3']
+nesting dictionaries:
+---
+router1:
+  device_type: cisco_ios
+  ip_addr: 1.1.1.1
+  username: admin
+  password: foobar
+two space indent, router1 is the key for the outer dict, and all the indented
+lines are the inner dict keys and values
+{'router1': {'device_type': 'cisco_ios', 'ip_addr': '1.1.1.1', 'username': 'admin', 'password': 'foobar'}}
+
+strings in yaml
+---
+- some_string
+- "some string that has multiple words"
+- null
+# Booleans # comments...
+- True
+- False
+- true
+- false
+- on
+- off
+- yes
+- no
+# what if need the literal yes/no on/off...
+- 'yes'
+print(yaml_out)
+['some_string', 'some string that has multiple words', None, True, False, True, False, True, False, True, False, 'yes']
+maybe you want multiline strings...
+---
+- |
+  This is a multiline string in YAML.
+  It can keep going across
+  different lines.
+
+that's it, no suffix
+pring(yaml_out)
+['This is a multiline string in YAML.\nIt can keep going across\ndifferent lines.\n']
+use > instead of - | and result is
+['This is a multiline string in YAML. It can keep going across different lines.\n']
+
+to read a yaml file (look above for yaml.load())

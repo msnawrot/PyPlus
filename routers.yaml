@@ -1,0 +1,11 @@
+---
+router1:
+  device_type: cisco_ios
+  ip_addr: 172.16.31.50
+  username: admin
+  password: beans
+router2:
+  device_type: cisco_ios
+  ip_addr: 172.16.0.1
+  username: superuser
+  password: superbeans
