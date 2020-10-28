@@ -162,3 +162,29 @@ use > instead of - | and result is
 ['This is a multiline string in YAML. It can keep going across different lines.\n']
 
 to read a yaml file (look above for yaml.load())
+
+5) JSON
+frequently used for computer to computer interaction.  Arist EAPI uses JSON
+python script to write out a data structure to a json file:
+import json
+my_data = {'device_name': 'rtr1', 'ip_addr': '10.1.1.1'}
+filename = import("Enter filename: ")
+with open(filename, "wt") as f:
+    json.dump(my_data, f, indent=4)
+print(json.dumps(my_data)) # dump s means dump as a string.  dump w/o s means dump as a file.
+python and json share:
+use {} for dictionary
+use [] for list
+differences b/w python and json:
+python uses None, json uses null
+python uses False, json uses false
+json is picky about trailing commas after last element, can error on that.  (no comma after last element)
+python script to read a pprint a json data structure:
+import json
+from pprint import pprint
+filename = input("Input filename: ")
+with open(filename) as f:
+    data = json.load(f)
+pprint(data)
+
+6) CiscoConfParse (Part1)
