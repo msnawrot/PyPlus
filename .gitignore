@@ -1,5 +1,6 @@
 # Matt's custom ignores
 *.log.txt
+.netmiko.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
