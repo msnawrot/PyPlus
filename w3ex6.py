@@ -23,3 +23,15 @@ elif len(ints_w_ip) > 1:
         print("Interface Line:: ", ints_w_ip[0].text)
         print("IP Address Line: ", ints_w_ip[0].children[0].text)
         print("-" * 10)
+# I want to document Kirk's solution, because it is better in the case where the
+# interface has a description.  See, description comes before ip address.
+# and my code relies on no desc: ints_w_ip[0].children[0].text
+#    interfaces = cisco_cfg.find_objects_w_child(
+#        parentspec=r"^interface", childspec=r"^\s+ip address"
+#    )
+#    for intf in interfaces:
+#        print("Interface Line: {}".format(intf.text))
+#        ip_address = intf.re_search_children(r"ip address")[0].text
+#        print("IP Address Line: {}".format(ip_address))
+#        print()
+#    print()
