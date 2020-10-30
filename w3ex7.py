@@ -27,7 +27,7 @@ conf_nei = cisco_obj.find_objects(r"neighbor")
 for nei in conf_nei:
     _, x = nei.text.split()
     _, y = nei.children[0].text.split()
-    BGPpeers.append(x, y)
+    BGPpeers.append((x, y))
 print("BGP Peers:")
 print(BGPpeers)
 
