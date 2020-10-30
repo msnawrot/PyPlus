@@ -243,3 +243,25 @@ match is a list-like object, square brackets and greater than symbol
 match[0].text is the string 'interface FastEthernet4'
 whoa, can even match[0].children to see each of the 4 config lines under FastEthernet4
 I wonder if match[0].children[1] returns the ip address line?
+
+8) CiscoConfParse(Part3)
+things we can do:
+parent = cisco>obj.find_objects(r"^line con 0")
+# parent will be a list of one item, so pop it off...
+parent = parent[0]
+# now, fun
+parent.is_parent => True
+parent.children # to see the children lines
+children = parent.children
+a_child = children[1]
+a_child.is_child => True
+a_chile.parent => returns CiscoConfObj of the parent, line @ 232 'line con 0'>
+a_child.siblings # list the siblings to this child, returns CiscoConfObjs in a list
+can also cisco_obj.find_objects_wo_child(parentspec=r"^interface", childspec=r"no ip address")
+  returns all the lines where parentspec matches but doesn't have childspec.
+there is a way to search inside of the children
+there's a crypto map CRYPTO 10 ipsec-isakmp line with children, one of which is set pfs
+match is a single CiscoConfigObj parent, crypto map CRYPTO 10 ipsec-isakmp
+we can match children using regex.
+match.re_search_children(r"set pfs ")
+results is a CiscoConfObj with text ' set pfs group5'

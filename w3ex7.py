@@ -25,11 +25,9 @@ neighbors = list()
 BGPpeers = list()
 conf_nei = cisco_obj.find_objects(r"neighbor")
 for nei in conf_nei:
-    # fix the append to match only the IP address, not "neighbor "
-    x = nei.text
-    y = nei.children[0].text
-    temp_tuple = (x, y)
-    BGPpeers.append(temp_tuple)
+    _, x = nei.text
+    _, y = nei.children[0].text
+    BGPpeers.append(x, y)
 print("BGP Peers:")
 print(BGPpeers)
 
