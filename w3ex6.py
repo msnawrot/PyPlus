@@ -16,7 +16,8 @@ ints_w_ip = cisco_obj.find_objects_w_child(parentspec=r"interface", childspec=r"
 if len(ints_w_ip) == 0:
     print("No interfaces with IP addresses found.")
 if len(ints_w_ip) == 1:
-    print("The interface with an IP is: ", ints_w_ip[0].text)
+    print("Interface Line: ", ints_w_ip[0].text)
+    print("IP Address Line: ", ints_w_ip[0].children[0].text)
 elif len(ints_w_ip) > 1:
     print("The interfaces with IP addresses are: ")
     for i in ints_w_ip:
