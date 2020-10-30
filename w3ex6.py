@@ -13,11 +13,11 @@ showrun_list = showrun.splitlines()
 cisco_obj = CiscoConfParse(showrun_list)
 
 ints_w_ip = cisco_obj.find_objects_w_child(parentspec=r"interface", childspec=r"^\s+ip address")
-if ints_w_ip == 0:
+if len(ints_w_ip) == 0:
     print("No interfaces with IP addresses found.")
-if ints_w_ip == 1:
+if len(ints_w_ip) == 1:
     print("The interface with an IP is: ", ints_w_ip[0].text)
-elif ints_w_ip > 1:
+elif len(ints_w_ip) > 1:
     print("The interfaces with IP addresses are: ")
     for i in ints_w_ip:
         print(ints_w_ip[i].text)
