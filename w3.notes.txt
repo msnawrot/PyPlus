@@ -188,3 +188,58 @@ with open(filename) as f:
 pprint(data)
 
 6) CiscoConfParse (Part1)
+CiscoConfParse is a library,  how is it useful?
+there are devices with text config and hierarchy denoted by leading space:
+interface FastEthernet4
+  ip add 11.1.1.1 255.255.255.0
+CiscoConfParse parses a config file and converts it into ... a tree he says
+cisco_obj = CiscoConfParse("cisco1.txt")
+  makes a CiscoConfParse object
+to parse just a string, instead of a file: cannot pass as a string... convert to list
+my_config = """
+foobar
+ foobar
+"""
+CiscoConfParse(my_config.splitlines()) # works b/c CiscoConfParse wants a list
+in general, we are looking for structures with find_objects
+help(cisco_obj.find_objects)
+find_objects takes a linespec, which means a regex pattern
+cisco_obj.find_objects(r"^interface") # for regex, always r"
+looking for all lines that start with the word interface
+returns a list-like structure, example:
+[<IOSCfgLine # 171 'interface FastEthernet0'>,
+ <IOSCfgLine # 174 'interface FastEthernet1'>]
+intf = cisco_obj.find_objects(r"^interface")
+print(intf[0]) # <IOSCfgLine # 171 'interface FastEthernet0'>
+pritn(intf[0].text) # 'interface FastEthernet0'
+search for more useful 'stuff':
+dir(intf[0]) # liked .children, so...
+print(intf[0].children) # [<IOSCfgLine # 172 ' no ip address' (parent is # 171)>]
+print(intf[4].children) # multiple lines returned, in a list.
+[<IOSCfgLine # 184 ' description *** LAN connection ***'  (parent is #183)>
+ <IOSCfgLine # 185 ' ip address 10.220.88.20 255.255.255.0' (parent is #183)>
+ <IOSCfgLine # 186 ' duplex auto' (parent is #183)>
+ <IOSCfgLine # 187 ' speed auto' (parent is #183)>]
+can loop over these:
+for child in intf[4].children:
+    print(child.text)
+
+7) CiscoConfParse (Part2)
+from ciscoconfparse import CiscoConfParse
+CiscoConfParse("cisco1.txt")
+cisco1.txt is a show run, plain text
+if you want to give CiscoConfParse a large string, you have to turn it into a list first.
+let's say we want a return of any interface with an IP address
+help(cisco_obj.find_parents_w_child) =  we have a parnetspec and a childspec...
+how to use this?
+cisco_obj.find_objects_w_child(parentspec=r"interface", childspec=r"ip address")
+...but that matches "no ip address" too, which is bad.
+cisco_obj.find_objects_w_child(parentspec=r"interface", childspec=r"^\s+ip address")
+regex - ^ means start of line, \s means whitespace, + means 1 or more of the previous character.
+together the regex says "line starts with whitespace, first words are ip address."
+what is returned is: [<IOSCfgLine # 183 'interface FastEthernet4'>], which is naming the interface with an IP address
+match = cisco_obj.find_objects_w_child(parentspec=r"interface", childspec=r"^\s+ip address")
+match is a list-like object, square brackets and greater than symbol
+match[0].text is the string 'interface FastEthernet4'
+whoa, can even match[0].children to see each of the 4 config lines under FastEthernet4
+I wonder if match[0].children[1] returns the ip address line?
