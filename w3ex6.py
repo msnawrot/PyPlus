@@ -19,6 +19,7 @@ if len(ints_w_ip) == 1:
     print("Interface Line: ", ints_w_ip[0].text)
     print("IP Address Line: ", ints_w_ip[0].children[0].text)
 elif len(ints_w_ip) > 1:
-    print("The interfaces with IP addresses are: ")
     for i in ints_w_ip:
-        print(ints_w_ip[i].text)
+        print("Interface Line:: ", ints_w_ip[0].text)
+        print("IP Address Line: ", ints_w_ip[0].children[0].text)
+        print("-" * 10)
