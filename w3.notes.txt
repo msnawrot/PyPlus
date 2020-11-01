@@ -46,7 +46,7 @@ new_interfaces = interfaces[0]['result']['interfaces']
 
 for intf_name, intf_value in new_interfaces.items():
     print(intf_name)
-    print(intf_value['interfaceStatus']
+    print(intf_value['interfaceStatus'])
     print()
 
 2) Changing Data Structure Format
@@ -239,14 +239,14 @@ regex - ^ means start of line, \s means whitespace, + means 1 or more of the pre
 together the regex says "line starts with whitespace, first words are ip address."
 what is returned is: [<IOSCfgLine # 183 'interface FastEthernet4'>], which is naming the interface with an IP address
 match = cisco_obj.find_objects_w_child(parentspec=r"interface", childspec=r"^\s+ip address")
-match is a list-like object, square brackets and greater than symbol
+match is a list-like object, square brackets and greater than less than symbols
 match[0].text is the string 'interface FastEthernet4'
 whoa, can even match[0].children to see each of the 4 config lines under FastEthernet4
-I wonder if match[0].children[1] returns the ip address line?
+I wonder if match[0].children[1] returns the ip address line? yes
 
 8) CiscoConfParse(Part3)
 things we can do:
-parent = cisco>obj.find_objects(r"^line con 0")
+parent = cisco_obj.find_objects(r"^line con 0")
 # parent will be a list of one item, so pop it off...
 parent = parent[0]
 # now, fun
@@ -265,3 +265,10 @@ match is a single CiscoConfigObj parent, crypto map CRYPTO 10 ipsec-isakmp
 we can match children using regex.
 match.re_search_children(r"set pfs ")
 results is a CiscoConfObj with text ' set pfs group5'
+
+parent.is_parent == True
+a_child.is_child == YTrue
+parent.children
+a_chile.parent
+a_child.siblings
+parent.re_search_children(r"set pfs")
