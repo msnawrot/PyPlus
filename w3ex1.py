@@ -11,9 +11,8 @@ Internet  10.220.88.38          161   0002.00ff.0001  ARPA   GigabitEthernet0/0/
 """
 
 arp_list = arp_data.splitlines()
-arp_list = arp_list[1:]
 new_structure = []
-for line in arp_list:
+for line in arp_list[1:]:
     _, ip_addr, _, hw_addr, _, intfc = line.split()
     new_structure.append({"ip address": ip_addr, "hw address": hw_addr, "interface": intfc})
 
