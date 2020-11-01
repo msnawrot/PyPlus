@@ -1,3 +1,5 @@
+import yaml
+
 wholelotta = [{
     'device_name': 'cisco4', # (Cisco IOS-XE)
     'host': 'cisco4.lasthop.io',
@@ -47,5 +49,5 @@ wholelotta = [{
     'password': 'Neo123'
 }]
 
-for x in wholelotta:
-    print(x['device_name'])
+with open("my_devices.yml", 'w') as yf:
+    yaml.dump(wholelotta, f, default_flow_style=False)
