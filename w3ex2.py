@@ -50,4 +50,4 @@ wholelotta = [{
 }]
 
 with open("my_devices.yml", 'w') as yf:
-    yaml.dump(wholelotta, f, default_flow_style=False)
+    yaml.dump(wholelotta, yf, default_flow_style=False)
