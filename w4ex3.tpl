@@ -1,5 +1,5 @@
 Value INT_NAME (\S+)
-Value LINE_STATUS (\S+)
+Value LINE_STATUS (up|down)
 Value ADMIN_STATE (\S+)
 Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
 Value MTU (\d+)
