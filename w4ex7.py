@@ -19,6 +19,6 @@ for entry in data:
     'SPEED' : entry[4],
     'STATUS' : entry[1],
     'VLAN' : entry[2]}
-    int_list.append(loop.dict)
+    int_list.append(loop_dict)
 
 pprint(int_list)
