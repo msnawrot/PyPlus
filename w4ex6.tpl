@@ -13,9 +13,7 @@ TableHead
   ^Neighbor.+State/PfxRcd\s*$$ -> Table
 
 Table
-  ^${NEIGHBOR}\s+\d\s+${REMOTE_AS}\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+${UP_DOWN}\s+${STATE_PFXRCD}\s*$$ -> Record
-
-EOF
+  ^${NEIGHBOR}\s+\d\s+${REMOTE_AS}\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+${UP_DOWN}\s+${STATE_PFXRCD}\s*
 
 #BGP router identifier 128.223.51.103, local AS number 6447
 #BGP table version is 24508298, main routing table version 24508298
