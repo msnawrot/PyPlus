@@ -1,4 +1,4 @@
-Value INT_NAME (\S+)
+Value INT_NAME (Ethernet2/1)
 Value LINE_STATUS (\S+)
 Value ADMIN_STATE (\S+)
 Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
