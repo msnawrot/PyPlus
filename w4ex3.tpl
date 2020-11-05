@@ -1,19 +1,18 @@
 Value INT_NAME (\S+)
 Value LINE_STATUS (\S+)
 Value ADMIN_STATE (\S+)
-Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
-Value MTU (\d+)
-Value DUPLEX (full-duplex|half-duplex)
-Value SPEED (.+)
+#Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
+#Value MTU (\d+)
+#Value DUPLEX (full-duplex|half-duplex)
+#Value SPEED (.+)
 
 Start
   ^${INT_NAME} is ${LINE_STATUS}
   ^admin state is ${ADMIN_STATE}, Dedicated Interface
-  ^ Hardware:.+address: ${MAC_ADDR}.+
-  ^ MTU ${MTU} bytes.+
-  ^ ${DUPLEX}, ${SPEED} -> Record
+#  ^ Hardware:.+address: ${MAC_ADDR}.+
+#  ^ MTU ${MTU} bytes.+
+#  ^ ${DUPLEX}, ${SPEED} -> Record
 
-EOF
 
 #Ethernet2/1 is up
 #admin state is up, Dedicated Interface
