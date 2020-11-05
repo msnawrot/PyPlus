@@ -9,9 +9,9 @@ Value SPEED (.+)
 Start
   ^${INT_NAME} is ${LINE_STATUS}
   ^admin state is ${ADMIN_STATE}
-  ^ Hardware:.+${MAC_ADDR} (bia
+  ^ Hardware:.+${MAC_ADDR} \(bia
   ^ MTU ${MTU}
-  ^ ${DUPLEX}, ${SPEED} -> Record 
+  ^ ${DUPLEX}, ${SPEED} -> Record
 
 EOF
 
