@@ -1,9 +1,9 @@
 Value Filldown BGP_ROUTER_ID ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
 Value Filldown LOCAL_AS (\d+)
-#Value NEIGHBOR ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
-#Value REMOTE_AS (\d+)
-#Value UP_DOWN (\S+)
-#Value STATE_PFXRCD (\S+)
+Value NEIGHBOR ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
+Value REMOTE_AS (\d+)
+Value UP_DOWN (\S+)
+Value STATE_PFXRCD (\S+)
 
 
 Start
