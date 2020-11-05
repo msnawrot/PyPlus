@@ -12,7 +12,7 @@ data = re_table.ParseText(raw_text_data)
 
 int_list = list()
 for entry in data:
-    loop.dict = {
+    loop_dict = {
     'DUPLEX' : entry[3],
     'PORT_NAME' : entry[0],
     'PORT_TYPE' : entry[5],
@@ -21,4 +21,4 @@ for entry in data:
     'VLAN' : entry[2]}
     int_list.append(loop.dict)
 
-pprint(int_list) 
+pprint(int_list)
