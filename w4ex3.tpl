@@ -2,9 +2,9 @@ Value INT_NAME (\S+)
 Value LINE_STATUS (\S+)
 Value ADMIN_STATE (\S+)
 Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
-#Value MTU (\d+)
-#Value DUPLEX (full-duplex|half-duplex)
-#Value SPEED (.+)
+Value MTU (\d+)
+Value DUPLEX (full-duplex|half-duplex)
+Value SPEED (.+)
 
 Start
   ^${INT_NAME} is ${LINE_STATUS}
