@@ -3,7 +3,7 @@ Value LINE_STATUS (\S+)
 Value ADMIN_STATE (\S+)
 Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
 Value MTU (\d+)
-Value DUPLEX ([full-duplex|half-duplex])
+Value DUPLEX (full-duplex|half-duplex)
 Value SPEED (.+)
 
 Start
