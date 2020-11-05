@@ -4,7 +4,7 @@ Start
   ^Port.+Type\s*$$ -> ShowIntStatus
 
 ShowIntStatus
-  ^${PORT}\s+ -> Record
+  ^${PORT} -> Record
 
 EOF
 
