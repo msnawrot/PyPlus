@@ -1,20 +1,20 @@
 Value Filldown BGP_ROUTER_ID ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
 Value Filldown LOCAL_AS (\d+)
-Value NEIGHBOR ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
-Value REMOTE_AS (\d+)
-Value UP_DOWN (\S+)
-Value STATE_PFXRCD (\S+)
+#Value NEIGHBOR ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
+#Value REMOTE_AS (\d+)
+#Value UP_DOWN (\S+)
+#Value STATE_PFXRCD (\S+)
 
 
 Start
-  ^BGP router identifier ${BGP_ROUTER_ID}, local AS number ${LOCAL_AS}  -> TableHead
+  ^BGP router identifier ${BGP_ROUTER_ID}, local AS number ${LOCAL_AS}
 
-TableHead
-  ^Neighbor.+State/PfxRcd\s*$$ -> Table
-
-Table
-  ^${NEIGHBOR}\s+\d\s+${REMOTE_AS}\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+${UP_DOWN}\s+${STATE_PFXRCD}\s*
-
+#TableHead
+#  ^Neighbor.+State/PfxRcd\s*$$ -> Table
+#
+#Table
+#  ^${NEIGHBOR}\s+\d\s+${REMOTE_AS}\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+${UP_DOWN}\s+${STATE_PFXRCD}\s*
+#
 #BGP router identifier 128.223.51.103, local AS number 6447
 #BGP table version is 24508298, main routing table version 24508298
 #776391 network entries using 192544968 bytes of memory
