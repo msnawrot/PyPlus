@@ -1,7 +1,7 @@
 Value INT_NAME (\S+)
 Value LINE_STATUS (\S+)
 Value ADMIN_STATE (\S+)
-#Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
+Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
 #Value MTU (\d+)
 #Value DUPLEX (full-duplex|half-duplex)
 #Value SPEED (.+)
@@ -9,7 +9,7 @@ Value ADMIN_STATE (\S+)
 Start
   ^${INT_NAME} is ${LINE_STATUS}
   ^admin state is ${ADMIN_STATE}, Dedicated Interface
-#  ^ Hardware:.+address: ${MAC_ADDR}.+
+  ^ Hardware:.+address: ${MAC_ADDR}.+
 #  ^ MTU ${MTU} bytes.+
 #  ^ ${DUPLEX}, ${SPEED} -> Record
 
