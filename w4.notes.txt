@@ -237,3 +237,16 @@ result is a list of lists of strings,
 [['FastEthernet0', 'unassigned', 'down', 'down'],
  ['FastEthernet4', '10.220.88.20', 'up', 'up', ]]
 from here, can convert the data structure as desired, such as into an outer & inner dict with interface name as the key
+
+
+w4ex7 notes:
+run my script of Kirk's, which are similar up to..., and "table_keys = re_table.header"
+so....pprint(data) won't have headers, but re_table.header still can pull the headers!! wow!!
+this is super useful.
+table_keys = re_table.header
+final_list = list()
+for fsm_list in data:
+    fsm_dict = dict(zip(table_keys, fsm_lit))
+    final_list.append(fsm_dict)
+
+pprint(final_list)
