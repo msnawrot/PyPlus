@@ -13,6 +13,8 @@ Start
 Table
   ^${NEIGHBOR}\s+\d\s+${REMOTE_AS}\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+${UP_DOWN}\s+${STATE_PFXRCD}\s* -> Record
 
+EOF
+
 #BGP router identifier 128.223.51.103, local AS number 6447
 #BGP table version is 24508298, main routing table version 24508298
 #776391 network entries using 192544968 bytes of memory
