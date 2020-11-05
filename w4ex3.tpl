@@ -9,9 +9,9 @@ Value MAC_ADDR ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})
 Start
   ^${INT_NAME} is ${LINE_STATUS}
   ^admin state is ${ADMIN_STATE}, Dedicated Interface
-  ^ Hardware:.+address: ${MAC_ADDR}.+
-#  ^ MTU ${MTU} bytes.+
-#  ^ ${DUPLEX}, ${SPEED} -> Record
+  ^  Hardware:.+address: ${MAC_ADDR}.+
+  ^  MTU ${MTU} bytes.+
+  ^  ${DUPLEX}, ${SPEED} -> Record
 
 
 #Ethernet2/1 is up
