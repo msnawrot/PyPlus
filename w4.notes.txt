@@ -1,0 +1,239 @@
+1) Python Libraries and PIP
+two fundamental ways to import modules in python
+import re - anything in the re library can be used like this: re.search - must use library as a prefix
+eg. help(re.search)
+from re import search - import search thing from the re library - don't need to use prefix in script
+eg. help(search)
+alt form too - from re import search as my_search - then call search in your program with the name my_search
+eg. help(my_search)
+many libraries built into python.  and you can install more with PIP and PyPI.org
+need a function?  search google for a library.  do I want to use this library? search github page for the library to see it's current activity
+I know pip install netmiko
+do I know pip install netmiko==2.3.0
+pip list
+pip freeze - very useful for recreating an environment.  > this to requirements.txt file
+then pip install -r ./requirements.txt on new Environment
+
+2) sys.path and PYTHONPATH
+when we import libraries, how does Python know where to search?
+want to check the search 'path'?
+import sys
+print(sys.path)
+first entry should always be '', which is null, which means working directory.
+when import re, python searches each directory in sys.path.
+do you want to know which library file was loaded?
+re.__file__
+pprint.__file__ # works if you import pprint, not if you from pprint import pprint
+NOW, if you go into your working directory and create re.py, then python and import re...you import the re.py you created, not the real library!
+trick - in working directory, make re.py, which has one line print("Hello World")
+then python and import re...it will print out Hello World.
+so....sys.path, the first matching dir is the library that is imported.
+must work on reusing your own python code
+one way, is create your own python module, my_file.py for example
+test:
+create my_file.py, which has one variable defined in it: MY_CONST = 3.14
+then python and import my_file.  next, print(my_file.MY_CONST) and that yields 3.14
+or from my_file import MY_CONST
+he has an example where he imports...
+from my_file import USERNAME, PASSWORD
+put the my_file.py anywhere in sys.path
+IF YOU WANT TO MODIFY sys.path...
+in shell (bash), set PYTHONPATH variable
+
+3) __name__ Technique
+reusing code...we write programs that have functions inside that we can reuse.
+so, how do we reuse the function in other programs without copy/pasting the funct to other programs.
+  what's wrong?  well, if you find an issue with the function, then you must search all places it is at.
+technique frequently seen...
+if __name__ == "__main__":
+__name__ is an internal variable in python that is automatically set
+pattern to follow:
+"""
+print("Importable code") # put importable code up here; what we will reuse later. functions, constants, classes
+if __name__ == "__main__":
+    print("Executable code") # put executable code here, what isn't reused later
+"""
+why does this work?
+if 'python test4.py', then __name__ == "__main__"
+if 'import test4', then __name__ == "test4"
+another version of this technique is:
+"""
+print("Importable code") # put importable code up here; what we will reuse later. functions, constants, classes
+def main():
+    print("Main program here")
+if __name__ == "__main__":
+    print("Executable code") # put executable code here, what isn't reused later
+    main() # if __name__ == "__main__" is used just to call main().
+"""
+
+4) Reusing code
+the idea is to be always thinking about creating building blocks that you can reuse later, to compound your abilities over time.
+you accomplish not just what you need in the moment, but also make stuff reusable.
+his example is creating dictionaries for rtr3, rtr4 for use with netmiko in one .py file (and using getpass in that file)
+and then making another program to 'from my_device import rtr3, rtr4' to then create a netmiko net_connect.
+another example is to have a constant in a .py file, such as an API key
+
+5) TextFSM Overview
+common issue in network automation is dealing with string output.  not many device have good api's, so we're often using SSH and parsing output.
+one way is python and re.  problems - regular expressions get very complicated and hard to maintain
+  another - they become really integrated and bound to code, hard to share parsing definitions widely, with other projects.
+advantages of textfsm:
+  easy to share
+  with finite state machine itself gives meaningful values - some things are really hard to do in python re
+disadvantages of textfsm:
+  learning new method of doing things - define variables and state transitions
+  poor debugging tools
+  hard to get feedback loop out of textfsm
+  need to know a set of re for textfsm:
+minimal set:
+\d - digits = 0-9
+\s - whitespace characters = space, tab, newline, carriage return
+\S - non-whitespace
+\w - alphanumeric includes _
+. - any single character
+* - repeated 0 or more times
++ - repeated 1 or more times
+^ - beginning of line anchor
+$ - end of line anchor
+greedy by default
+
+6) TextFSM Template Structure
+eg with show ip bgp summary
+we'd have our first state transition being after the 'header' and right before the 'table'
+define an re to indicate this border - eg "State/PfxRcd$"
+one of the first things we do is define a template file
+template file has:
+at very top, Values that we define - they are entries in the output that we are trying to extract
+define Values one after another with no whitespace lines b/w Values - can have comment lines.
+Value VAR_NAME (regex_pattern)
+next, state machine section, which begins with one whitespace line and then Start
+re's here too. eg: (re is the part between ^ and ID, the arrow says transition to state LLDP)
+  ^Device.*ID -> LLDP
+next, define the state LLDP, which begins with one whitespace line and then LLDP
+in the LLDP state section, there are 'actions' defined. eg. the Record action:
+  ^${VAR_NAME}.* -> Record
+template file has an implicit EOF and Record, but you can define your own; start a line with EOF
+
+7) TextFSM Creating a Template (Part1)
+how to install TextFSM:
+pip install textfsm
+pip install colorama # helps see results from textfsm, got to use Kirk's textfsm to use this
+there are three different textfsm packages... we want the one from PyPI, which is the one maintained by google
+Kirk has his own textfsm that is similar, but has some more debugging, and he has a link to his TextFSM
+example of a template for show ip int brief
+vi show_ip_int_brief.template
+handy to put the raw output in the template file as creating, and comment out the output
+we want Interface, IP-Address, Status, and Protocol
+Value INTERFACE (\S+)
+he recommends making the template 'iteratively'  which means make one value then make the state
+Start
+  ^${INTERFACE}\s+ -> Record
+
+EOF
+now with the simple template, test:
+python textfsm.py show_ip_int_brief.template show_ip_int_brief.txt # the txt has the raw output from the router
+FSM Table will include the Value as an entry.
+the table is made up of a single element list of each match (and the Value name INTERFACE)
+now go back to template and add more Values
+Value IP_ADDR (\S+)
+
+Start
+  ^${INTERFACE}\s+${IP_ADDR}\s -> Record
+now retest:
+now the FSMTable has lists with two elements, one list per line, one element for INTERFACE and another element for IP_ADDR
+now to get rid of the matching on the raw output header row, by defining a state transition
+Start
+  ^Interface.*Protocol\s*$ -> ShowIPIntBrief # not sure if whitespace after Protocol, so \s* to match 0 or more
+ShowIPINtBrief
+  ^${INTERFACE}\s+${IP_ADDR}\s -> Record
+now we don't match on the header line.  we still have the line indicating what the variable names are
+if unsure where your textfsm.py is, launch python and textfsm.__file__
+
+8) TextFSM Creating a Template (Part2)
+the rest of the template for show ip int brief
+Value INTERFACE (\S+)
+Value IP_ADDR (\S+)
+Value LINE_STATUS (up|down)
+Value LINE_PROTOCOL (up|down)
+
+Start
+  ^Interface.*Protocol\s*$$ -> ShowIPIntBrief
+
+ShowIPIntBrief
+  ^${INTERFACE}\s+${IP_ADDR}.*${LINE_STATUS}\s+${LINE_PROTOCOL}\s*$$ -> Record
+
+EOF
+he recommends using a large sample of output to test the re with in your unit test, so you don't get in a situation where you match on specific output only
+
+9) TextFSM Show Version Example
+show version output illustrates interesting things with textFSM
+he copied a section of the full show ver output into the template
+Value SERIAL_NUMBER (\S+)
+Value CONFIG_REGISTER (0x\d+)
+
+Start
+  ^Processor board ID ${SERIAL_NUMBER} -> Record
+  ^Configuration register is ${CONFIG_REGISTER} -> Record
+
+when we test this, we get FSMTable like this:
+['SERIAL_NUMBER', 'CONFIG_REGISTER']
+['FGL222290LB', '']
+['', '0x2102']
+note the null entries.
+a couple ways to solve this: b/c we want the result as two lists, one for the variable names and the second with both Values
+1) just have "-> Record" once, at the end of the template's Configuration register line
+2) rely on an implicit record at the EOF ...yeah, there is an implicit record.
+NOTE - this template has no EOF string in it, which means implicit EOF.   When you add an explicit EOF without an explicit Record, then nothing is recorded.
+3) combine solutions 1 & 2, an explicit EOF and an explicit -> Record
+
+9) TextFSM Filldown
+more output ideas with textfsm
+another show ip bgp - header at top, tabular output, and the tabular shows not all fields show up in each line.
+eg.
+    Network       Next Hop          Metric
+*   1.0.0.0/24    208.74.64.40
+*>                162.251.163.2
+*                 94.142.247.3      0
+end eg.
+line starts with * means this route is valid.  line starts with *> means this is the best route
+Value VALID_BEST ([*>]+)  # using [], called a character set, and * in a [] doesn't need a \
+Value Filldown PREFIX (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}/\d{1,2})  # this matches an IP address in cidr.  {1,3} means prev character 1-3 times.
+Value NEXT_HOP (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})
+
+Start
+  ^\s+Network.*Path\s*$$ -> ShowIPBGP
+
+ShowIPBGP
+  ^ ${VALID_BEST}\s+${PREFIX}\s+${NEXT_HOP} -> Record
+  ^ ${VALID_BEST}\s+${NEXT_HOP} -> Record
+
+EOF
+
+Filldown = temporarily save this value and if you encounter a line with null in that section, use the saved value until find a new non-null value
+to use filldown, the state section must have a line that matches with the value and a line that matches without the value (lines 207 & 208 in this page) both with -> Record
+there is also a concept of Fillup, Required
+
+finally, how do you use textfsm within a python script?
+eg.
+import textfsm
+
+template_file = "show_ip_int_brief.template"
+template = open(template_file)
+
+with open("show_ip_int_brief.txt") as f:
+    raw_text_data = f.read()
+
+import ipdb # this is a ipython debugger, so we can debug the output
+ipdb.set_trace()
+
+# The argument 'template' is a file handle and 'raw_text_data' is a string.
+re_table = textfsm.TextFSM(template)
+data = re_table.ParseText(raw_text_data)
+
+template.close()
+END
+so what does data look like?  he runs ipython (this eg script), and pprint(data)
+result is a list of lists of strings,
+[['FastEthernet0', 'unassigned', 'down', 'down'],
+ ['FastEthernet4', '10.220.88.20', 'up', 'up', ]]
+from here, can convert the data structure as desired, such as into an outer & inner dict with interface name as the key
