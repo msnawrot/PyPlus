@@ -7,7 +7,7 @@ Start
   ^MAC Address.+Flags\s*$$ -> ShowARP
 
 ShowARP
-  ^${MAC_ADDR}\s+${IP_ADDR}\s+${NAME}\s+${INTERFACE}
+  ^${MAC_ADDR}\s+${IP_ADDR}\s+${NAME}\s+${INTERFACE}.+$$
 
 #  MAC Address       Address         Name                      Interface           Flags
 #  00:62:ec:29:70:fe 10.220.88.1     10.220.88.1               vlan.0              none
