@@ -9,6 +9,14 @@ router bgp {{ local_as }}
   neighbor {{ peer2_ip }} remote-as {{ peer2_as }}
     address-family ipv4 unicast
 """
+my_dict = {
+    "local_as": 10,
+    "peer1_ip": "10.1.20.2",
+    "peer1_as": 20,
+    "peer2_ip": "10.1.30.2",
+    "peer2_as": 30
+}
 j2_template = Template(bgp_config)
-output = j2_template.render(local_as=10, peer1_ip="10.1.20.2", peer1_as=20, peer2_ip="10.1.30.2", peer2_as=30)
+# output = j2_template.render(local_as=10, peer1_ip="10.1.20.2", peer1_as=20, peer2_ip="10.1.30.2", peer2_as=30)
+output = j2_template.render(**my_dict)
 print(output)
