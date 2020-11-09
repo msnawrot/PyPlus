@@ -246,7 +246,7 @@ this is super useful.
 table_keys = re_table.header
 final_list = list()
 for fsm_list in data:
-    fsm_dict = dict(zip(table_keys, fsm_lit))
+    fsm_dict = dict(zip(table_keys, fsm_list))
     final_list.append(fsm_dict)
 
 pprint(final_list)

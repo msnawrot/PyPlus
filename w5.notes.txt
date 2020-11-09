@@ -1,0 +1,96 @@
+1) Jinja2 Templating
+Jinja2 is the main way of doing templating in python.
+why do we need templating?
+one use case is config templates w/ variables in a yaml or json file, for different devices.
+or a website - html template and a database of variables, for different users
+django has a template engine built into it
+another use case, an email template with variables from some source,
+
+2) Jinja2 Constructs
+we'll have some source of variables
+we'll have some template file (initially start with the template being a file in a program)
+we'll have some set of strings/files output from the template + variables
+templates have the capability to store variables, have some logic (for loops or conditional if statements)
+templates have the capability to deal with lists and dictionaries
+---
+what do the constructs look like?
+Variables: {{ vlan}}
+inside the double curly brace is an expression, whether it's simply a variable substitution or a mathmatical expression
+Conditionals:
+ {% if var == 'value' %}
+ string of output text
+ {% elif var == 'other value' %}
+ next string of output text
+ {% else $}
+ the else clause
+ {% endif %}
+in the template, we need clear indicators to separate code block from just text.
+elif and else are optional, endif is not.
+can also nest conditional statements, if statements inside of other if statements
+can nest if statements inside of for loops too.
+For Loops:
+ {% for item in some_list %}
+ string of output {{ item }}
+ {% endfor %}
+# the {{ item }} refers to the {% for item... %}
+Jinja2 Data Structures:
+List:  {{ some_list[0] }}
+can have some list and refer to elements with index values, just like python
+Dictionary: {{ a_dict["key"] }}
+  or {{ a_dict.key }}
+Loop over a dictionary:
+ {% for key in my_dict %}
+ {{ key }}
+ {% endfor %}
+
+ {% for k, v in my_dict.items() %}
+ some text {{ k }} and {{ v }}
+ {% endfor %}
+
+3) Jinja2 Variables
+using Jinja in code:
+ pip install jinja2
+ from jinja2 import Template
+ text1 = "some text"
+ j2_template = Template(text1) # use Template class, pass it the text1 variable, and that creates a jinja object.
+ output = j2_template.render() # call .render on the template
+ print(output)
+# making it more interesting, working with variables
+ from jinja2 import Template
+ bgp_conf = """
+ router bgp {{ bgp_as }}
+  bgp router-id 10.220.88.20
+ """
+ j2_template = Template(bgp_conf)
+ output = j2_template.render(bgp_as=22)
+ print(output)
+this is valid:
+ example_expr = """
+ some text with expressions {{ 13 + 3 }}
+ """
+ j2_template = Template(example_expr)
+ output = j2_template.render()
+ print(output)
+result is: "some text with expressions 16"
+an example with multiple variables in the string:
+ from jinja2 import Template
+ bgp_config = """
+ router bgp {{ bgp_as }}
+  bgp router-id {{router_id}}
+ """
+ j2_template = Template(bgp_config)
+ output = j2_template.render(bgp_as=22, router_id="1.1.1.1")
+ print(output)
+as templates grow, passing in each var in the render statement becomes unmanageable. so use dictionaries.
+ from jinja2 import Template
+ bgp_config = """
+ router bgp {{ bgp_as }}
+  bgp router-id {{ router_id }}
+ """
+ my_vars = {
+     "bgp_as": 22,
+     "router_id": "1.1.1.1"
+ }
+ j2_template = Template(bgp_config)
+ output = j2_template.render(**my_vars)
+ print(output)
