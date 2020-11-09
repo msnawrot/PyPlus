@@ -94,3 +94,38 @@ as templates grow, passing in each var in the render statement becomes unmanagea
  j2_template = Template(bgp_config)
  output = j2_template.render(**my_vars)
  print(output)
+
+4) Jinja2 Environment
+using a template stored in a file:
+ from jinja2 import Template
+ filename = "bgp_config.j2"
+ with open(filename) as f:
+     my_template = f.read()
+ template_vars = {
+     "bgp_as": 22,
+     "router_id": "1.1.1.1"
+ }
+ j2_template = Template(my_template) # my_template is the contents of a file as one string.
+ output = j2_template.render(**template_vars)
+ print(output)
+problems with doing it this way:
+if you have an undefined var, then the output works, with missing text, and no error.
+have to do more special file handling if you want to look in other dirs (paths) for templates.
+if your template includes other templates (possible) then this reading style breaks down.
+THE FIX, use a Jinja2 Environment
+ from jinja2 import FileSystemLoader, StrictUndefined
+ from jinja2.environment import Environment
+ env = Environment() # create a jinja2 Environment
+ env.loader = FileSystemLoader('.') # call environment loader, using FileSystemLoader class to define where to look for templates, '.' means 'look in working directory'
+ my_vars = { blah blah dict }
+ template_file = 'bgp_config.j2'
+ template = env.get_template(template_file) # we load the template differently that with open(), using get_template method of the env, with template_file
+ output = template.render(**my_vars)
+ print(output)
+so it's all similar to the with open way, but this is centered around env.ger_template(template_file)
+in order to get the program to fail on undefined variables:
+ env = Environment(undefined=StrictUndefined)
+in order to search for the template file in a subdirectory:
+ env.loader = FileSystemLoader('./templates/')
+can even call FileSystemLoader with a list of directories to search:
+ env.loader = FileSystemLoader(['.', './templates/' ])
