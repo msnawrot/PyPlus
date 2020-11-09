@@ -13,8 +13,7 @@ bgp_config = """
 router bgp {{ local_as }}
   {% for neighbor in neighbors %}neighbor {{ neighbor["peer_ip"] }} remote-as {{ neighbor["peer_as"] }}
     {% if neighbor["peer_ip"] == "10.1.20.2" %}update-source loopback99
-    ebgp-multihop 2 {% endif %}
-    address-family ipv4 unicast
+    ebgp-multihop 2 {% endif %}address-family ipv4 unicast
   {% endfor %}
 """
 my_dict = {
