@@ -122,7 +122,7 @@ THE FIX, use a Jinja2 Environment
  template = env.get_template(template_file) # we load the template differently that with open(), using get_template method of the env, with template_file
  output = template.render(**my_vars)
  print(output)
-so it's all similar to the with open way, but this is centered around env.ger_template(template_file)
+so it's all similar to the with open way, but this is centered around env.get_template(template_file)
 in order to get the program to fail on undefined variables:
  env = Environment(undefined=StrictUndefined)
 in order to search for the template file in a subdirectory:
