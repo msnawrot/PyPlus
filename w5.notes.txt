@@ -142,3 +142,21 @@ remove the conditional whitespace with -
 {%- if primary_ip %}
 or {% if primary_ip -%}
 the - negates all whitespace 'surrounding the conditional,' new lines and spaces
+
+7) Jinja2 Conditionals (Part2)
+good use case:
+"""
+interface GigabitEthernet0/1/0
+  {% if mode == "access" %}
+  switchport access vlan 400
+  switchport mode access
+  {%- elif mode == "trunk" %}
+  switchport trunk native vlan 1
+  switchport trunk allowed vlan 1,300,400
+  switchport mode trunk
+  {%- endif %}
+"""
+Kirk says that you should push your complexity out of the template and into the program.
+template complexity can get out of hand quickly, making it very hard to debug.
+...and use the whitespace stripping syntax to make the template more readable
+Kirk simplifies the if, elif template above to be if, else, since there are only two modes.
