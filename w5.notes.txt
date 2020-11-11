@@ -129,3 +129,16 @@ in order to search for the template file in a subdirectory:
  env.loader = FileSystemLoader('./templates/')
 can even call FileSystemLoader with a list of directories to search:
  env.loader = FileSystemLoader(['.', './templates/' ])
+
+5) Jinja2 Conditionals (Part1)
+just a review of information from video 2.
+oh, except he shows this conditional, which means if True, and his variable primary_ip is the bool True.
+{% if primary_ip %}
+{% endif %}
+
+6) Junja2 Whitespace Stripping
+conditional lines can cause extra whitespace.
+remove the conditional whitespace with -
+{%- if primary_ip %}
+or {% if primary_ip -%}
+the - negates all whitespace 'surrounding the conditional,' new lines and spaces
