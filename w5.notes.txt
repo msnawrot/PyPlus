@@ -160,3 +160,74 @@ Kirk says that you should push your complexity out of the template and into the 
 template complexity can get out of hand quickly, making it very hard to debug.
 ...and use the whitespace stripping syntax to make the template more readable
 Kirk simplifies the if, elif template above to be if, else, since there are only two modes.
+
+8) Jinja2 Nested Conditionals
+good use case: an if statement with 'is defined' - again, his script var has bgp_peer1 = True
+{%- if bgp_peer1 is defined %}
+neighbor {{ peer_ip }}
+ address-family ipv4 unicast
+  {%- if bgp_policy is defined %}
+  route-policy ALLOW in
+  route-policy ALLOW out
+  {%- endif %}
+{%- endif %}
+he's showing that you can next conditionals.  Key is that the first endif statement is assoc with the last if statement, and the last endif with the first if statement.
+
+9) Jinja2 Loops (Part1)
+for loops
+you can loop over a list, a dictionary, ...even range(#)
+whoa, you can use some python functions in the jinja template:
+{%- for port_number in range(24) %}
+interface GigabitEthernet0/1/{{ port_number }}
+  switchport access vlan 400
+  switchport mode access
+!
+{%- endfor %}
+remember how range works:
+range(24) = 0 - 23
+range(1, 24) = 1 - 23
+
+10) Jinja2 Loops (Part2)
+continuing from the example in the last video, a problem:
+the interface name is part of the template, and Kirk thinks it's better if the interface name is in the python program
+how does he do that?
+from jinja2 import FileSystemLoader, StrictUndefined
+from jinja2.environment import Environment
+
+env = Environment(undefined=StrictUndefined)
+env.loader = FileSystemLoader(".")
+
+# make a list of each interface name
+base_intf = "GigabitEthernet0/1/"
+intf_list = []
+for intf_number in range(24):
+    intf_name = f"{base_intf}{intf_number}"
+    intf_list.append(intf_name)
+
+# imbed the interface name list into a dictionary for passing to template.render
+intf_vars = {
+    "intf_list": intf_list,
+}
+
+template_file = "intf_config2.j2"
+template = env.get_template(template_file)
+output = template.render(**intf_vars)
+print(output)
++=-
+{%- for intf in intf_list %}
+interface {{ intf }}
+  switchport mode access
+{%- endif %}
+
+11) Jinja2 Loop Nesting
+he uses a for loop nested in another to print out GigabitEthernet0/0/0 through 0/3/24 - see j2play.py
+{# this is a comment in Jinja2 #}
+{#- this is a comment in Jinja2 with whitespace stripping #}
+{#
+Jinja2 comments can be
+multiple lines
+#}
+
+12) Jinja2 Lists
+in jinja2, you can call a single element from a list with an index #
+you can iterate over a list with a for loop, too.
