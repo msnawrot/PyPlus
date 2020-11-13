@@ -274,3 +274,52 @@ For loop in dict (using items)
 {%- for k, v in arp_entry.items() %}
     {{ k }} --> {{ v }}
 {%- endfor %}
+
+14) Jinja2 Create Variables and Filters
+this is how you create variables within a jinja2 template
+{%- set var1 = 'Cisco' %}
+{%- set var2 = 'Arista' %}
+{{ var1 }}
+{{ var2 }}
+in addition to strings, you can make lists in jinja2 template
+{%- set my_list = ['cisco', 'arista', 'juniper'] %}
+{{ my_list }}
+and there is a thing called filters.  capitalize, lower, upper, center(80) are filters.  filters can be chained:
+{{ var1 | capitalize }}
+{{ var2 | upper }}
+{{ var3 | capitalize | center(80) }}
+and you can set default values in case the variable doesn't have a value:
+{{ var4 | default("Some Default Value") }}
+center(80) means 'center this text in a row 80 characters in width'
+ansible uses jinja2 filters heavily.
+
+15) Jinja2 includes
+this is the jinja2 syntax to include another template
+what jinja2 will do is find the other template, render the text in that template, and return that rendered string right into the first template:
+so, this template:
+header info
+{% include 'other_template.j2' %}
+footer info
+<end>
+and with other_template.j2 looking like this:
+THIS IS TEXT FROM OTHER_TEMPLATE
+<end>
+the result is:
+header info
+THIS IS TEXT FROM OTHER_TEMPLATE
+footer info
+<end>
+you can have multiple include statements in different places within the jinja2 template.
+examples of where to use this?
+configuration templating - your main template has global variables (snmp, ntp, aaa), and include template for interfaces
+another way to include is with a variable as opposed to a string:
+{# string include #}
+{% include 'other_template.j2' %}
+{# varible include #}
+{% include template_var %}
+in this way, we can programmatically pull in different templates
+
+16) Jinja2 Other Advanced Topics
+Jinja2 has something called macros, that act like functions.
+you call the macro and then jinja2 repeats a block of text.
+there is also a second way of doing template inheritance.  Kirk uses it for html but not for network stuff.
