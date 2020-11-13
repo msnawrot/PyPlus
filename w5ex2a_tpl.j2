@@ -1,5 +1,2 @@
-{%- for host in hostlist %}
-{{ host.hostname }}
-interface {{ host.interface }}
-  ip address {{ host.ip_addr }}/{{ host.netmask }}
-{% endfor %}
+interface {{ interface }}
+  ip address {{ ip_addr }}/{{ netmask }}
