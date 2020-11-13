@@ -231,3 +231,46 @@ multiple lines
 12) Jinja2 Lists
 in jinja2, you can call a single element from a list with an index #
 you can iterate over a list with a for loop, too.
+ex.
+First element: {{ intf_list[0] }}
+Last element: {{ intf_list[-1] }}
+this is new - Length of List: {{ intf_list | length }}
+  everything between the {{ }} in jinja2 is called an 'expression'
+  jinja2 allows for piping data into a 'filter', which is what length is, a filter.
+print an entire jinja2 list - Entire List {{ intf_list }}
+  the output looks just like printing a list in python:
+  ['GigabitEthernet0/1/0', 'GigabitEthernet0/1/1', 'GigabitEthernet0/1/2', ...]
+
+13) Jinja2 Dictionaries
+reminder of dictionary syntax in jinja2 template:
+{{ a_dict["key"] }} or {{ a_dict.key }}
+reminder of looping over a dictionary
+{# this will print out all the keys #}
+{% for key in my_dict %}
+{{ key }}
+{% endfor %}
+{# this will print out all the keys and values #}
+{% for k, v in my_dict.items() %}
+Some text {{ k }} and {{ v }}
+{% endfor %}
+ex.
+# arp_entry dict in python script:
+arp_entry = {
+        "interface": "mgmt0",
+        "ip": "10.0.0.72",
+        "mac": "2C:C2:60:36:32:21",
+        "age": 140.0
+}
+{# jinja2 template #}
+ARP Interface:
+{{ arp_entry["interface"] }}
+MAC --> IP
+{{ arp_entry['mac'] }} --> {{ arp_entry["ip"] }}
+For loop in dict
+{%- for k in arp_entry %}
+     {{ k }}
+{%- endfor %}
+For loop in dict (using items)
+{%- for k, v in arp_entry.items() %}
+    {{ k }} --> {{ v }}
+{%- endfor %}

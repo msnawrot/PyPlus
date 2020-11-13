@@ -18,4 +18,4 @@ intf_vars = {
 template_file = "template1.j2"
 template = env.get_template(template_file)
 output = template.render(**intf_vars)
-pprint(output)
+print(output)
