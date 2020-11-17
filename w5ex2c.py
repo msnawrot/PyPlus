@@ -85,7 +85,11 @@ for router in yaml_out:
 # verify that the BGP session reaches the established state.
 # textfsm has a template for cisco_nxos_show_ip_bgp, neighbors, summary
     output = net_connect.send_command("show ip bgp neighbors", use_textfsm=True)
-    print(output)
+    for each in output:
+        print(each['neighbor'])
+        if each['neighbor'] == j2_vars['peer_ip']:
+            print(f"{nm_vars['host']} has a BGP peer; {each['neighbor']}")
+        
 ## start the main program steps
 #
 ## output progress of the main steps
