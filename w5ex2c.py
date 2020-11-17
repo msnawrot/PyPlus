@@ -88,7 +88,7 @@ def verify_config(routers):
             print(f"{nm_vars['host']} has a BGP peer; {each['neighbor']}")
             print("\n")
             match += 1
-        if match = 0:
+        if match == 0:
             print("No BGP neighbors detected!!!")
 
 
