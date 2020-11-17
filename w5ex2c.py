@@ -9,7 +9,7 @@ from pprint import pprint
 
 # global Variables
 # password = getpass("Type in the password for the routers: ")
-filename = "testlist2.yml"
+filename = "w5ex2c.yml"
 with open(filename) as f:
     yaml_out = yaml.load(f, Loader=yaml.FullLoader)
 

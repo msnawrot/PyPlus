@@ -11,7 +11,7 @@
       host: nxos1.lasthop.io
       username: username
       password: password
-      device_type: nxos
+      device_type: cisco_nxos
 - - j2_vars:
       host: nxos2.lasthop.io
       interface: Ethernet1/1
@@ -24,4 +24,4 @@
       host: nxos2.lasthop.io
       username: username
       password: password
-      device_type: nxos
+      device_type: cisco_nxos
