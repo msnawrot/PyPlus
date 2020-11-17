@@ -35,12 +35,6 @@ def render_config(routers):
         e[1]['nm_vars'].update({'config': output})
         print()
 
-render_config(yaml_out)
-proceed = input("Do the above config changes look correct?  If not, this is a final chance to halt before making the change. : (y\\Y) ")
-if proceed.lower() != 'y':
-    exit()
-else:
-
 ## push configuration changes function
 ## router must be a dictionary, with session_log, host, username, password, and device_type keys
 ## why not have a config key in the dictionary, too
@@ -68,21 +62,19 @@ def push_config_list(routers):
         if output:
             print(f"Config pushed successfully.  Check {nm_vars['session_log']} for details.\n")
 
-push_config_list(yaml_out)
-
 ## verify configuration changes function
 # verify you are able to ping between the devices and also
-
-for router in yaml_out:
-    print("Preparing to verify change...\n")
-    j2_vars, nm_vars = router
-    j2_vars = j2_vars['j2_vars']
-    nm_vars = nm_vars['nm_vars']
-    nm_vars.update({'password': global_password})
-    print(f"Verifying change on {nm_vars['host']}...\n")
-    net_connect = ConnectHandler(**nm_vars, session_log_file_mode="append")
-    output = net_connect.send_command(f"ping {j2_vars['peer_ip']}")
-    print(output)
+def verify_config(routers):
+    for router in routers:
+        print("Preparing to verify change...\n")
+        j2_vars, nm_vars = router
+        j2_vars = j2_vars['j2_vars']
+        nm_vars = nm_vars['nm_vars']
+        nm_vars.update({'password': global_password})
+        print(f"Verifying change on {nm_vars['host']}...\n")
+        net_connect = ConnectHandler(**nm_vars, session_log_file_mode="append")
+        output = net_connect.send_command(f"ping {j2_vars['peer_ip']}")
+        print(output)
 # no textfsm for ping, so I'll have to write code to parse the output myself
 # would like a boolean that represents "can ping successfully"
 # for now, just print ping output to screen for the engineer to verify
@@ -98,13 +90,14 @@ for router in yaml_out:
             match += 1
         if match = 0:
             print("No BGP neighbors detected!!!")
-## start the main program steps
-#
-## output progress of the main steps
-#
 
-#to send a command to the device:
-#output = c.send_command("show ip int brief")
-#
-## net_connect.find_prompt()
-#
+
+render_config(yaml_out)
+proceed = input("Do the above config changes look correct?  If not, this is a final chance to halt before making the change. : (y\\Y) ")
+if proceed.lower() != 'y':
+    exit()
+else:
+    push_config_list(yaml_out)
+
+verify_config(yaml_out)
+print("\nRemember that all of this change was recorded in logfiles.")
