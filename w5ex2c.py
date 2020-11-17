@@ -28,9 +28,10 @@ def render_config(routers):
         template = env.get_template(j2_template)
         output = template.render(**j2_vars)
         print(f"rendered config for {j2_vars['host']}:\n", output)
-        print("\n")
+        print()
         print("Storing rendered config...")
         e[1]['nm_vars'].update({'config': output})
+        print()
 
 render_config(yaml_out)
 
@@ -42,6 +43,8 @@ render_config(yaml_out)
 for e in yaml_out:
     nm_vars = e[1]['nm_vars']
     config = nm_vars['config']
+    print(config)
+    print(type(config))
     net_connect = ConnectHandler(**nm_vars)
     output = net_connect.send_config_set(cfg)
     print(output)
