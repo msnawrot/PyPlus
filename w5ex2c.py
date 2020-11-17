@@ -36,7 +36,10 @@ def render_config(routers):
         print()
 
 render_config(yaml_out)
-
+proceed = input("Do the above config changes look correct?  If not, this is a final chance to halt before making the change. : (y\\Y) ")
+if proceed.lower() != 'y':
+    exit()
+else:
 
 ## push configuration changes function
 ## router must be a dictionary, with session_log, host, username, password, and device_type keys
@@ -88,10 +91,13 @@ for router in yaml_out:
 # textfsm has a template for cisco_nxos_show_ip_bgp, neighbors, summary
     output = net_connect.send_command("show ip bgp neighbors", use_textfsm=True)
     for each in output:
+        match = 0
         if each['neighbor'] == j2_vars['peer_ip']:
             print(f"{nm_vars['host']} has a BGP peer; {each['neighbor']}")
             print("\n")
-
+            match += 1
+        if match = 0:
+            print("No BGP neighbors detected!!!")
 ## start the main program steps
 #
 ## output progress of the main steps
