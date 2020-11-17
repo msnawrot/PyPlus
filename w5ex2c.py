@@ -20,7 +20,7 @@ env = Environment(undefined=StrictUndefined)
 env.loader = FileSystemLoader([".", "./jinja2"])
 
 # jinja2 templates
-j2_template = "w5ex2b_tpl.j2"
+j2_template = "w5ex2c_tpl.j2"
 
 def render_config(routers):
     for e in routers:
