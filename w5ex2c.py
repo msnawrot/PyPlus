@@ -13,6 +13,8 @@ filename = "w5ex2c.yml"
 with open(filename) as f:
     yaml_out = yaml.load(f, Loader=yaml.FullLoader)
 
+global_password = getpass("Router password, please: ")
+
 # jinja2 environment
 env = Environment(undefined=StrictUndefined)
 env.loader = FileSystemLoader([".", "./jinja2"])
@@ -42,10 +44,10 @@ render_config(yaml_out)
 
 for e in yaml_out:
     nm_vars = e[1]['nm_vars']
-    config = nm_vars['config']
-    nm_vars.pop('config')
+    config = nm_vars.pop('config')
+    nm_vars.update({'password': global_password})
     net_connect = ConnectHandler(**nm_vars)
-    output = net_connect.send_config_set(cfg)
+    output = net_connect.send_config_set(config)
     print(output)
 
 
