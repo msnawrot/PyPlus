@@ -60,30 +60,32 @@ def push_config_list(routers):
         config_list = rawconfig.split('\n')
         nm_vars.update({'password': global_password})
         net_connect = ConnectHandler(**nm_vars)
-        print("Config push...\n")
+        print(f"Config push to {nm_vars['host']}...\n")
         output = net_connect.send_config_set(config_list)
         if output:
-            print("Config pushed successfully.  Check .log for details.\n")
+            print(f"Config pushed successfully.  Check {nm_vars['session_log']} for details.\n")
 
 push_config_list(yaml_out)
 
-#9)
-#storing routers in a dictionary:
-#device1 = {
-#  'host': 'cisco1.lasthop.io',
-#  'username': 'pyclass',
-#  'device_type': 'cisco_ios',
-#  'password': getpass
-#}
-#
-#to send a command to the device:
-#output = c.send_command("show ip int brief")
-#
-## net_connect.find_prompt()
-#
 ## verify configuration changes function
+# verify you are able to ping between the devices and also
+for router in routers:
+    j2_vars, nm_vars = router
+    j2_vars = j2_vars['j2_vars']
+    nm_vars = nm_vars['nm_vars']
+    nm_vars.update({'password': global_password})
+    net_connect = COnnectHandler(**nm_vars)
+    output = net_connect.send_command(f"ping {j2_vars['peer_ip']})
+# verify that the BGP session reaches the established state.
+
 #
 ## start the main program steps
 #
 ## output progress of the main steps
+#
+
+#to send a command to the device:
+#output = c.send_command("show ip int brief")
+#
+## net_connect.find_prompt()
 #
