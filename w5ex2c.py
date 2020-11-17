@@ -31,7 +31,6 @@ def render_config(routers):
         print("\n")
         print("Storing rendered config...")
         e[1]['nm_vars'].update({'config': output})
-        print(e)
 
 render_config(yaml_out)
 
@@ -43,7 +42,7 @@ render_config(yaml_out)
 for e in yaml_out:
     nm_vars = e[1]['nm_vars']
     config = nm_vars['config']
-    net_connect = ConnectHandler(**net_connect)
+    net_connect = ConnectHandler(**nm_vars)
     output = net_connect.send_config_set(cfg)
     print(output)
 
