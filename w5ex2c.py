@@ -42,15 +42,17 @@ render_config(yaml_out)
 ## router must be a dictionary, with session_log, host, username, password, and device_type keys
 ## why not have a config key in the dictionary, too
 
-for e in yaml_out:
-    nm_vars = e[1]['nm_vars']
-    config = nm_vars.pop('config')
-    nm_vars.update({'password': global_password})
-    net_connect = ConnectHandler(**nm_vars)
-    output = net_connect.find_prompt()
-    # output = net_connect.send_config_set(config)
-    print(output)
+def find_prompt(routers):
+    for e in yaml_out:
+        nm_vars = e[1]['nm_vars']
+        config = nm_vars.pop('config')
+        nm_vars.update({'password': global_password})
+        net_connect = ConnectHandler(**nm_vars)
+        output = net_connect.find_prompt()
+        # output = net_connect.send_config_set(config)
+        print(output)
 
+find_prompt(routers)
 
 #9)
 #storing routers in a dictionary:
