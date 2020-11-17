@@ -80,10 +80,12 @@ for router in yaml_out:
     print(output)
 # no textfsm for ping, so I'll have to write code to parse the output myself
 # would like a boolean that represents "can ping successfully"
+# for now, just print ping output to screen for the engineer to verify
 
 # verify that the BGP session reaches the established state.
 # textfsm has a template for cisco_nxos_show_ip_bgp, neighbors, summary
-#
+    output = net_connect.send_command("show ip bgp neighbors", use_textfsm=True)
+    print(output)
 ## start the main program steps
 #
 ## output progress of the main steps
