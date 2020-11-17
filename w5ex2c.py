@@ -75,8 +75,9 @@ for router in yaml_out:
     j2_vars = j2_vars['j2_vars']
     nm_vars = nm_vars['nm_vars']
     nm_vars.update({'password': global_password})
-    net_connect = ConnectHandler(**nm_vars)
+    net_connect = ConnectHandler(**nm_vars, session_log_file_mode: "append")
     output = net_connect.send_command(f"ping {j2_vars['peer_ip']}")
+    print(output)
 # verify that the BGP session reaches the established state.
 
 #
