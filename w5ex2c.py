@@ -69,7 +69,8 @@ push_config_list(yaml_out)
 
 ## verify configuration changes function
 # verify you are able to ping between the devices and also
-for router in routers:
+
+for router in yaml_out:
     j2_vars, nm_vars = router
     j2_vars = j2_vars['j2_vars']
     nm_vars = nm_vars['nm_vars']
