@@ -60,7 +60,7 @@ def push_config_list(routers):
         config_list = rawconfig.split('\n')
         nm_vars.update({'password': global_password})
         net_connect = ConnectHandler(**nm_vars)
-        print("Config push...\n)
+        print("Config push...\n")
         output = net_connect.send_config_set(config_list)
         if output:
             print("Config pushed successfully.  Check .log for details.\n")
