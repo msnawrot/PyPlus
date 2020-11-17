@@ -54,15 +54,16 @@ def find_prompt(routers):
 
 def push_config_list(routers):
     for e in routers:
-        print("Preparing for config push...")
+        print("Preparing for config push...\n")
         nm_vars = e[1]['nm_vars']
         rawconfig = nm_vars.pop('config')
         config_list = rawconfig.split('\n')
         nm_vars.update({'password': global_password})
         net_connect = ConnectHandler(**nm_vars)
-        print("Config push...")
+        print("Config push...\n)
         output = net_connect.send_config_set(config_list)
-        print(output)
+        if output:
+            print("Config pushed successfully.  Check .log for details.\n")
 
 push_config_list(yaml_out)
 
