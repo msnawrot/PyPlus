@@ -71,10 +71,12 @@ push_config_list(yaml_out)
 # verify you are able to ping between the devices and also
 
 for router in yaml_out:
+    print("Preparing to verify change...\n")
     j2_vars, nm_vars = router
     j2_vars = j2_vars['j2_vars']
     nm_vars = nm_vars['nm_vars']
     nm_vars.update({'password': global_password})
+    print(f"Verifying change on {nm_vars['host']}...\n")
     net_connect = ConnectHandler(**nm_vars, session_log_file_mode="append")
     output = net_connect.send_command(f"ping {j2_vars['peer_ip']}")
     print(output)
@@ -86,10 +88,10 @@ for router in yaml_out:
 # textfsm has a template for cisco_nxos_show_ip_bgp, neighbors, summary
     output = net_connect.send_command("show ip bgp neighbors", use_textfsm=True)
     for each in output:
-        print(each['neighbor'])
         if each['neighbor'] == j2_vars['peer_ip']:
             print(f"{nm_vars['host']} has a BGP peer; {each['neighbor']}")
-        
+            print("\n")
+
 ## start the main program steps
 #
 ## output progress of the main steps
