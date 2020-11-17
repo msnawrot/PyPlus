@@ -23,7 +23,7 @@ env.loader = FileSystemLoader([".", "./jinja2"])
 j2_template = "w5ex2b_tpl.j2"
 
 def render_config(routers):
-    for e in (routers):
+    for e in routers:
         j2_vars = e[0]['j2_vars']
         #print(type(j2_vars))
         #print(j2_vars)
@@ -43,7 +43,7 @@ render_config(yaml_out)
 ## why not have a config key in the dictionary, too
 
 def find_prompt(routers):
-    for e in yaml_out:
+    for e in routers:
         nm_vars = e[1]['nm_vars']
         config = nm_vars.pop('config')
         nm_vars.update({'password': global_password})
@@ -52,7 +52,7 @@ def find_prompt(routers):
         # output = net_connect.send_config_set(config)
         print(output)
 
-find_prompt(routers)
+find_prompt(yaml_out)
 
 #9)
 #storing routers in a dictionary:
