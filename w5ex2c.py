@@ -59,7 +59,7 @@ def push_config(routers):
         nm_vars.update({'password': global_password})
         print(config)
         net_connect = ConnectHandler(**nm_vars)
-        output = net_connect.send_config_set(config.strip())
+        output = net_connect.send_config_set(config.split('\n'))
         print(output)
 
 push_config(yaml_out)
