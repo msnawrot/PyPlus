@@ -43,8 +43,7 @@ render_config(yaml_out)
 for e in yaml_out:
     nm_vars = e[1]['nm_vars']
     config = nm_vars['config']
-    print(config)
-    print(type(config))
+    nm_vars.pop('config')
     net_connect = ConnectHandler(**nm_vars)
     output = net_connect.send_config_set(cfg)
     print(output)
