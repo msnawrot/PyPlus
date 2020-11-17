@@ -52,7 +52,16 @@ def find_prompt(routers):
         # output = net_connect.send_config_set(config)
         print(output)
 
-find_prompt(yaml_out)
+def push_config(routers):
+    for e in routers:
+        nm_vars = e[1]['nm_vars']
+        config = nm_vars.pop('config')
+        nm_vars.update({'password': global_password})
+        net_connect = ConnectHandler(**nm_vars)
+        output = net_connect.send_config_set(config)
+        print(output)
+
+push_config(yaml_out)
 
 #9)
 #storing routers in a dictionary:
