@@ -24,7 +24,7 @@ def get_and_print_ip_mac(device):
     for ip_addr, mac_addr in ip_mac_list:
         print(ip_addr, "\t", mac_addr)
 
-if name == __main__:
+if __name__ == __main__:
     try:
         read_yaml(w6ex2a.yml)
         device_dict = yaml_out
