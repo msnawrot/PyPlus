@@ -7,7 +7,7 @@ def read_yaml(filename):
         yaml_out = yaml.load(f, Loader=yaml.FullLoader)
     return yaml_out
 
-def get_and_print_ip_mac(**device, cmd):
+def : run_show_command(**device, cmd):
     connection = pyeapi.client.connect(**device)
     device = pyeapi.client.Node(connection)
     output = device.enable(cmd)
@@ -26,4 +26,4 @@ if __name__ == "__main__":
     device_dict = read_yaml('w6ex2a.yml')
     device_dict['password'] = getpass("password please: ")
     show_cmd = "show ip arp"
-    get_and_print_ip_mac(**device_dict, show_cmd)
+    : run_show_command(**device_dict, show_cmd)
