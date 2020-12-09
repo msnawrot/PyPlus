@@ -18,7 +18,6 @@ def get_and_print_ip_mac(device):
         ip_addr = addr_dict['address']
         mac_addr = addr_dict['hwAddress']
         ip_mac_list.append((ip_addr, mac_addr))
-
     # print the list of tuples with a for loop
     print("IP Address\t MAC Address")
     for ip_addr, mac_addr in ip_mac_list:
