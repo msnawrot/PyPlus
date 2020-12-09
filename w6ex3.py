@@ -1,6 +1,8 @@
-import my_funcs
+from my_funcs import read_yaml
+from my_funcs import run_show_command
+from getpass import getpass
 
-device_dict = my_funcs.read_yaml('w6ex2a.yml')
+device_dict = read_yaml('w6ex2a.yml')
 device_dict['password'] = getpass("password please: ")
 show_cmd = "show ip route"
-my_funcs.run_show_command(show_cmd,**device_dict)
+run_show_command(show_cmd,**device_dict)
