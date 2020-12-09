@@ -7,7 +7,7 @@ def read_yaml(filename):
         yaml_out = yaml.load(f, Loader=yaml.FullLoader)
     return yaml_out
 
-def get_and_print_ip_mac(device):
+def get_and_print_ip_mac(**device):
     connection = pyeapi.client.connect(**device)
     show_cmd = "show ip arp"
     device = pyeapi.client.Node(connection)
