@@ -5,4 +5,4 @@ from getpass import getpass
 device_dict = read_yaml('w6ex2a.yml')
 device_dict['password'] = getpass("password please: ")
 show_cmd = "show ip route"
-run_show_command(show_cmd,**device_dict)
+result = run_show_command(show_cmd,**device_dict)
