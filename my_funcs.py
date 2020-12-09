@@ -25,7 +25,7 @@ def get_and_print_ip_mac(device):
 
 if __name__ == "__main__":
     try:
-        read_yaml(w6ex2a.yml)
+        read_yaml('w6ex2a.yml')
         device_dict = yaml_out
         device_dict['password'] = getpass("password please: ")
         get_and_print_ip_mac(**device_dict)
