@@ -1,0 +1,263 @@
+1) Arista eAPI Intro
+high level differences b/w screen scraping and using an API
+categorize SSH/telnet as screen scraping b/c those are intended for humans
+whereas eAPI, and other API's, are intended for programmatic consumption.
+fundamental problems with screen scraping:
+ no notion of a command being finished
+  after a command you get: question about continuing, just a prompt, a prompt that is now different,
+  some commands take a long time to complete, such as downloading code.
+ what we get back is a big string, formatted for humans,
+ output is meant for humans, usually with ANSI escape characters, colors, which must be filtered out by programs
+ odd formatting output easy to understand as humans, but can throw off parsing.
+api's send back structured data, avoids ANSI escape characters
+
+Arista's API is eAPI
+in general connect via HTTPS
+we run HTTP commands inside the HTTPS
+we pass json-rpc structured data with HTTP commands
+
+eAPI not a RESTful API
+RESTful API characteristics
+ as we access different resources, the URL changes.
+ we use HTTP GET to get, POST, to create, PUT, to modify things
+
+eAPI - we access one URL, regardless of resources,
+we always do an HTTP POST, for getting info, creating or modifying configs.
+
+NXAPI very similar to eAPI
+
+2) Arista eAPI Request Structure
+How do we enable on a switch:
+enter config mode
+management api http-commands
+   protocol https
+   no shutdown
+show management api http-commands
+
+JSON-RPC Request Structure:
+{
+    "jsonrpc": "2.0",
+    "method": "runCmds",
+    "params": {
+        "version": 1,
+        "cmds": [
+            "show version"
+        ],
+        "format": "json"
+    },
+    "id": "1"
+}
+the id is a way to match the request we send to the switch with the switch's response
+
+JSON-RPC Response
+{
+    "id": "1",
+    "jsonrpc": "2.0",
+    "result": [
+        {
+            "architecture": "i386",
+            "serialNumber": "",
+            "systemMacAddress": "52:54:ab:da:54:95",
+            "version": "4.20.10M"
+        }
+    ]
+}
+
+3) Arista eAPI using Python-Requests Library
+he uses a low-level request library, allowing him to format the requests and get the responses
+<start program>
+import requests
+import json
+from pprint import pprint
+from getpass import getpass
+from urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+http_headers = {"Content-Type": "application/json-rpc;"}
+host = "arista8.lasthop.io"
+port = 443
+username = "pyclass"
+password = getpass()
+
+url = "https://{}:{}/command-api".format(host, port)
+
+json_payload = {
+    "jsonrpc": "2.0",
+    "method": "runCmds",
+    "params": {"version": 1, "cmds": ["show version"], "format": "json"},
+    "id": "1",
+}
+json_data = json.dumps(json_payload) # convert the json payload into a json string
+http_headers["Content-length"] = str(len(json_data))
+# next, send the POST
+response = requests.post(
+    url,
+    headers=http_headers,
+    auth=(username, password),
+    data=json_data,
+    verify=False,
+)
+# verify=False is 'I don't care that this is a self-signed certificate'
+response = response.json()
+pprint(response)
+<end program>
+he uses ipdb as a ipython debugger, stepping through the code step by step, n for next p for print.
+something interesting when he looks at the raw response, before the "response = response.json()" line
+ p response prints "<Response [200]>"
+ but p response.__dict__ prints a dictionary of content that includes the _content, status_code, etc.
+  he says we can dig through the output, but he knows that he wants the 'json field'...the _content
+
+in addition to sending show commands, we can do a configuration, and the way to do that is almost identical.
+after the 'url =' and before the 'json_payload', he makes this list:
+cmds = [
+    "disable",
+    {"cmd": "enable", "input": ""},
+    "configure terminal",
+    "vlan 225",
+    "name green",
+]
+and then in the json_payload dict, we include in the "params"...
+    "params": {"version": 1, "cmds": cmds, "format": "json"},
+a note about "cmd": "enable", "input": ""...his enable password is Null.
+a note on the response of the config change,  within the result is a list of empty dictionaries.
+  each dictionary corresponds with a command that was passed in, and an empty dict means the command took correctly
+a note on the commands, the commands must be fully qualified, I.E. no "no shut" yes "no shutdown", no "conf t" yes "configure terminal"
+
+
+4) Creating a Basic Connection using pyeapi
+now that we've seen the low level requirements to make a request using the requests library,
+let's look at how to make a connection using the pyeapi library.
+it's a library created by Arista to help us use the eapi.
+in general, for each api using, look for a library, b/c you want to avoid getting into low level
+mechanics of an api.
+pip install pyeapi
+a couple ways to ues pyeapi, one way uses a config file.  we're looking at the other way.
+<start program>
+import pyeapi
+from getpass import getpass
+# make the connection object
+connection = pyeapi.client.connect(
+    transport="https",
+    host="arista8.lasthop.io",
+    username="pyclass",
+    password=getpass(),
+    port="443",
+)
+
+# create a Node object, passing it the connection object)
+enable = getpass("Enable: ")
+device = pyeapi.client.Node(connection, enablepwd=enable)
+<end program>
+interactively, dir(device) and you see that you have var methods:
+  api, config, model, etc.
+  device.model returns a string, "vEOS"
+  device.version returns a string, "4.20.10M"
+  device.get_config() returns a list, one config line per list entry
+look at help(device.get_config)
+  see that we can return the config as a string:
+  device.get_config('startup-config', as_string=True) # this is for startup config, string format
+  one long string, with \n escape characters embedded.
+  device.get_config(as_string=True) # this is for running config, string format
+
+5) Creating Connections using pyeapi and .eapi.conf
+making an eapi connection using pyeapi and a config file.
+can specify the config file as an env var as well, but not required
+the filename is .eapi.conf, so it's hidden
+file format:
+[connection:arista8]
+host: arista8.lasthop.io
+username: pyclass
+password: order66
+transport: https
+<end file>
+<start program>
+import pyeapi
+device1 = pyeapi.connect_to("arista8")
+<end program>
+the .eapi.conf file can contain multiple connections, just repeat the pattern for additional devices.
+can also specify defaults within .eapi.conf:
+[DEFAULT]
+username: pyclass
+password: order66
+transport: https
+<end file>
+
+6) Executing Show Commands using pyeapi
+script to show ver:
+<start program>
+import pyeapi
+from getpass import getpass
+
+connection = pyeapi.client.connect(
+    transport="https",
+    host="arista8.lasthop.io",
+    username="pyclass",
+    password=getpass(),
+    port="443"
+)
+
+device = pyeapi.client.Node(connection)
+output = device.enable("show version")
+print(output)
+<end program>
+enable method executes show commands and ensures you are in enable context.
+it's also the primary way to execute show commands.
+it does NOT get you into or out of enable mode.
+in the script above, output is a list of a dictionary with inner dictionaries.
+[{'command': 'show version', 'result': {'uptime': 95040.69, 'modelName': 'vEOS',
+'internalVersion': '4.20.10M-100402M', 'version': '4.20.10M'}, 'encoding': 'json'}]
+
+the script can contain a list of commands:
+output = device.enable(["show version", "show ip arp"])
+and the first command's result is output[0], and the second command's result is output[1]
+
+7) Configuring Devices using pyeapi
+code example:
+<start program>
+import pyeapi
+from getpass import getpass
+
+connection = pyeapi.client.connect(
+    transport="https",
+    host="arisa8.lasthop.io",
+    username="pyclass",
+    password=getpass(),
+    port="443",
+)
+
+cfg = [
+    "vlan 225",
+    "name green",
+    "vlan 226",
+    "name red",
+]
+
+device = pyeapi.client.Node(connection)
+output = device.config(cfg)
+print(output)
+<end program>
+see that we use the method device.confg, and we pass it a list of strings which
+are the config lines to implement.
+note: we didn't need to include enable or config terminal in the list of config lines
+output response comes back with 4 blank dictionaries in a list.  one dictionary
+per config line.
+note: there is a device.run_commands.  .enable and .config are just wrappers for
+.run_commands.
+
+8) Using the .api() method in pyeapi
+https://pyeapi.readthedocs.io/en/latest/modules.html
+looking at an example of using one of these .api subsystem, tradeoffs after.
+the script looks the same, basically, but substitute device.config(cfg) with
+vlan_cfg = device.api("vlans") # vlans being one of the items at that webpage.
+what we get back from the device is a vlan object.
+then we can see info about the vlans with:
+vlan_cfg.get(1) # or get(2) or get(3) or getall()
+there's a method to create vlans:
+vlan_cfg.create(800) # creates vlan 800
+vlan_cfg.set_name(800, "blue") # name vlan 800
+.enable and .config are more generic, .api is more feature specific.
+however, using .api requires learning each individual object and methods for
+that object, e.g. vlan_cfg and vlan_cfg.create()
+
+9) Arista eAPI Conclusion
