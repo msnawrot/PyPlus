@@ -3,7 +3,7 @@ from getpass import getpass
 
 connection = pyeapi.client.connect(
     transport="https",
-    host="arisa3.lasthop.io",
+    host="arista3.lasthop.io",
     username="pyclass",
     password=getpass(),
     port="443",
