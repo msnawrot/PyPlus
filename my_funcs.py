@@ -7,11 +7,10 @@ def read_yaml(filename):
         yaml_out = yaml.load(f, Loader=yaml.FullLoader)
     return yaml_out
 
-def get_and_print_ip_mac(**device):
+def get_and_print_ip_mac(**device, cmd):
     connection = pyeapi.client.connect(**device)
-    show_cmd = "show ip arp"
     device = pyeapi.client.Node(connection)
-    output = device.enable(show_cmd)
+    output = device.enable(cmd)
     # convert output to a list of tuples
     ip_mac_list = list()
     for addr_dict in output[0]['result']['ipV4Neighbors']:
@@ -26,4 +25,5 @@ def get_and_print_ip_mac(**device):
 if __name__ == "__main__":
     device_dict = read_yaml('w6ex2a.yml')
     device_dict['password'] = getpass("password please: ")
-    get_and_print_ip_mac(**device_dict)
+    show_cmd = "show ip arp"
+    get_and_print_ip_mac(**device_dict, show_cmd)
