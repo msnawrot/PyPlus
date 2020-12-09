@@ -30,3 +30,5 @@ if name == __main__:
         device_dict = yaml_out
         device_dict['password'] = getpass("password please: ")
         get_and_print_ip_mac(**device_dict)
+    except:
+        print("Exception")
