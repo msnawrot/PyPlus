@@ -1,13 +1,15 @@
+import yaml
 import pyeapi
 from getpass import getpass
 
-connection = pyeapi.client.connect(
-    transport="https",
-    host="arista3.lasthop.io",
-    username="pyclass",
-    password=getpass(),
-    port="443",
-)
+filename = "w6ex2a.yml"
+with open(filename) as f:
+    yaml_out = yaml.load(f, Loader=yaml.FullLoader)
+
+device_dict = yaml_out
+
+device_dict['password'] = getpass("password please: ")
+connection = pyeapi.client.connect(**device_dict)
 
 show_cmd = "show ip arp"
 
