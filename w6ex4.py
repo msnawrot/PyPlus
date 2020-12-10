@@ -27,4 +27,4 @@ for switch in devices:
         eapi_stuff['password'] = getpass()
         connection = pyeapi.client.connect(**eapi_stuff)
         device = pyeapi.client.Node(connection)
-        output = device.config(cfg.splitlines())
+        output = device.config(cfg)
