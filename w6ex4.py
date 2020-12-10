@@ -13,6 +13,7 @@ def read_yaml(filename):
 
 
 devices = read_yaml('w6ex4.yml')
+pass = getpass("Password :")
 # loop interates over each switch
 # within the loop, first a jinja2 template is rendered,
 # second, the config is pushed to the switch
@@ -22,7 +23,12 @@ for switch in devices:
         j2_template = Template(template)
         cfg = j2_template.render(**eapi_stuff['data'])
         cfg = cfg.splitlines()
-        eapi_stuff['password'] = getpass()
-        connection = pyeapi.client.connect(**eapi_stuff)
+        connection = pyeapi.client.connect(password=pass,**eapi_stuff)
         device = pyeapi.client.Node(connection)
         output = device.config(cfg)
+
+for switch in devices:
+    for key, eapi_stuff in switch.items():
+        connection = pyeapi.client.connect(password=pass,**eapi_stuff)
+        device = pyeapi.client.Node(connection)
+        output = device.enable("show ip int brief")
