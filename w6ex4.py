@@ -32,3 +32,4 @@ for switch in devices:
         connection = pyeapi.client.connect(password=passwd,**eapi_stuff)
         device = pyeapi.client.Node(connection)
         output = device.enable("show ip interface brief")
+        print(key, ":\n", output)
