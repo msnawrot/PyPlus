@@ -3,10 +3,8 @@ import pyeapi
 from getpass import getpass
 from jinja2 import Template
 
-template = """
-interface {{ intf_name }}
-   ip address {{ intf_ip }}/{{ intf_mask }}
-"""
+template = """interface {{ intf_name }}
+   ip address {{ intf_ip }}/{{ intf_mask }}"""
 
 def read_yaml(filename):
     with open(filename) as f:
@@ -27,6 +25,4 @@ for switch in devices:
         eapi_stuff['password'] = getpass()
         connection = pyeapi.client.connect(**eapi_stuff)
         device = pyeapi.client.Node(connection)
-        output = device.enable("show version")
-        #output = device.config(cfg)
-        break
+        output = device.config(cfg)
