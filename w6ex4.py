@@ -28,3 +28,4 @@ for switch in devices:
         connection = pyeapi.client.connect(**eapi_stuff)
         device = pyeapi.client.Node(connection)
         output = device.config(cfg)
+        break
