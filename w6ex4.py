@@ -29,6 +29,6 @@ for switch in devices:
 
 for switch in devices:
     for key, eapi_stuff in switch.items():
-        connection = pyeapi.client.connect(password=pass,**eapi_stuff)
+        connection = pyeapi.client.connect(password=passwd,**eapi_stuff)
         device = pyeapi.client.Node(connection)
         output = device.enable("show ip int brief")
