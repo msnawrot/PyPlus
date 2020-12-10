@@ -22,6 +22,6 @@ for switch in devices:
         j2_template = Template(template)
         cfg = j2_template.render(**eapi_stuff['data'])
         cfg = cfg.splitlines()
-        connection = pyeapi.client.connect(passwd,**eapi_stuff)
+        connection = pyeapi.client.connect(password=passwd,**eapi_stuff)
         device = pyeapi.client.Node(connection)
         output = device.config(cfg)
