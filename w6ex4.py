@@ -3,8 +3,10 @@ import pyeapi
 from getpass import getpass
 from jinja2 import Template
 
-template = """interface {{ intf_name }}
-   ip address {{ intf_ip }}/{{ intf_mask }}"""
+template = """
+interface {{ intf_name }}
+   ip address {{ intf_ip }}/{{ intf_mask }}
+"""
 
 def read_yaml(filename):
     with open(filename) as f:
@@ -20,7 +22,7 @@ passwd = getpass("Password :")
 # foobar needs to be the data dictionary
 for switch in devices:
     for key, eapi_stuff in switch.items():
-        j2_template = Template(template)
+        j2_template = Template(template.strip())
         cfg = j2_template.render(**eapi_stuff['data'])
         cfg = cfg.splitlines()
         connection = pyeapi.client.connect(password=passwd,**eapi_stuff)
