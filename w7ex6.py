@@ -1,3 +1,9 @@
+import requests # b/c want disable cert warning on self-signed certs
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from getpass import getpass
+from nxapi_plumbing import Device
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # Create an nxapi_plumbing "Device" object for nxos1
 device = Device(
