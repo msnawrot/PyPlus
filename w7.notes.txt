@@ -1,0 +1,331 @@
+1) XML - Why Care?
+why do we care about parsing xml, why can't we use json?
+several contexts where we still have xml or xml used under the hood and we may
+need to handle the XML
+netconf uses xml under the hood to serialize data (rest api mode)
+nxapi uses xml/can use xml (json mode)
+many devices support "show ver | display xml"
+iosxr has an xml subsystem - send xml commands and get xml output. (grpc)
+bottom line - many field devices and support for the newer (stuff) is of varying levels
+XML is more widely supported; that's why
+which libraries do we use in python?
+xmltodict
+lxml
+built-in xml library
+
+2) XML Introduction
+the structure is hierarchical
+hierarchy denoted by indentation, 4 spaces at a time.
+the overall structure is like a tree.  root nodes and child nodes
+child nodes have only one parent
+every node is an 'element node', root or child
+we have tags and can have text fields, in nodes.
+the text field isn't a tag.
+lxml treats elements (tags) as nodes.  text is treated as an attribute of the element node
+yikes! elements can have attributes..."treat attributes as an attribue of the element node"
+  <product-model fake_attribute='whatever'>srx100h2</product-model>
+     tag           attribute               text field
+so it's an attribute from the xml perspective and from the python perspective.
+the attributes aren't nodes on the tree.
+in a browser, we have a thing called a DOM (document object model).  in it's perspective
+it does consider elements and text and attributes as nodes.
+but in python, we have only element nodes.
+this matters when we ask python "get me the children nodes of foobar"
+so, XML is MORE than just lists and dictionaries (like json)
+so, XML doesn't map to python lists and dictionaries as easily as json.
+
+3) XML Terminology
+root node - has no parent, only children
+child nodes - have exactly one parent node
+element - the entirety of the start of a tag to the end of that tag - includes everything inside it.
+  <software-information> # start tag
+      <host-name>pynet-jnpr-srx1</host-name>
+      <jsr/>
+  </software-information> # end tag.
+  # host-name and jsr lines are a part of the software-information element.
+  # <jsr/> with the forward slash at the end of the string indicates "this is a
+  # combined start and end tag"
+descendant node - so like, all nodes are descendants of the root node.
+ancestor node - so like, the root node is the ancestor of all other nodes.
+namespaces - a way to uniquely identify the nodes.
+
+4) xmltodict Library
+basically this library tries to convert XML straight into a python dictionary.
+it can cause some problems, b/c XML isn't JSON. not an easy translation.
+<start program>
+xmlfile = open("show_ver1.xml")
+xmldata = xmlfile.read().strip()
+print(xmldata) # looks like a multiline string so far
+import xmltodict # must pip install
+my_xml = xmltodict.parse(xmldata)
+print(my_xml)
+<end program>
+we have an ordered python dictionary:
+OrderedDict([('software-information',
+              OrderedDict([('host-name', 'pynet-jnpr-srx1'),
+              ('product-model', 'srx100h2'),
+              ('product-name', 'srx100h2'),
+              ('jsr', None),
+              ('package-information',
+               OrderedDict([('name', 'junos'),
+                            ('comment',
+                             'JUNOS Software Release [12.1x44-D35.5]')]))]))])
+now process it by peeling back the layers
+my_xml.keys()
+my_xml['software-information']
+my_xml['software-information']['host-name']
+  this returns 'pynet-jnpr-srx1'
+so the 'software-information' and 'host-name' are keys, and the 'pynet-jnpr-srx1' is a value (string)
+my_xml['software-information']['package-information'].keys()
+the keys of the ordered dictionary are the tags in the XML.
+
+5) xmltodict and the List Problem
+eg. XML with static routes, where this one device has a single static route in
+one context, the mgmt context, and multiple static routes in another context.
+--or anytime you have either one or more than one result--
+processing by xmltodict:
+a node of name x appears once - dict value for this key is a string
+a node of name x appears two or more - dict valye for this key is a list.
+so the problem is that our code could have parsing problems.
+there is a way to force a field to be a list, even if it has a single text element,
+but you have to know the tag name,
+my_xml = xmltodict.parse(xlmdata, force_list={'product-model': True})
+this workaround can help in our code.
+
+6) xmltodict and Attributes
+e.g. any element with an attribute:
+    <product-name foo="bar">srx100h2</product-name>
+    <product-name foo="bar">srx100h3</product-name>
+['product-name'] key now has a list of ordered dicts.  the inner dicts have a
+key for the attribute and a key for the text field.  With some interesting symbols:
+[OrderedDict([('@foo', 'bar'), ('#text', 'srx100h2')]),
+OrderedDict([('@foo', 'bar'), ('#text', 'srx100h3')]),]
+...a list b/c there are still two elements with the same tag name.
+...inner ordered dicts b/c the element has an attribute.
+the attribute 'name' gets @ prepended, and the text 'name' is '#text'.
+so, we can differentiate b/w the attributes and the text, however, this also means
+that our code has to deal with the values being either a string, a list, or a
+list of ordered dicts.
+
+7) Python-lxml Basics
+xmltodict has issues, see above two videos. these other libraries process the xml
+differently than xmltodict.
+from lxml import etree
+# pip install lxml. some c bindings, so possibly some compilation issues on server.
+my_xml = etree.parse("juniper_show_version.xml")
+we get back an lxml object.
+my_xml.getroot()
+my_xml.tag
+there's ways we can iterate through this object, and ways we can find within it.
+there's a way to convert the object back into string representation:
+etree.tostring(my_xml) # returns byte encoded string.  (starts with b)
+etree.tostring(my_xml).decode() # returns unicode string.
+
+8) Built-in XML Library and ElementTree
+import xml.etree.ElementTree as etree
+<and this next part looks just like lxml..)
+my_xml = etree.parse("juniper_show_version.xml")
+my_xml.getroot()
+<end>
+in lxml and built-in xml, we can pass in a string instead of a filename, too:
+xml_string = """
+<rpc-reply xmlns:blahblah>
+    <foo/>
+</rpc-reply>
+"""
+my_xml = etree.fromstring(xml_string.strip())
+what we get back is an element.
+so in total, what we get back is either a tree object or an element.
+.parse() gives us a tree.
+.getroot() gives us the root element, so does .fromstring()
+.tag, iterating through tree, searching tree work with built-in library.
+so why lxml if the built-in works?  adv. of lxml has been performance and also
+better xpath searching capabilities in lxml.
+focus of rest of training material is on lxml, b/c napalm and pyez library.
+
+9) lxml and Traversing the XML Tree
+how do we parse xml info using the lxml library?
+in general, we as network engineers are looking for extracting text from specific xml tags.
+there are two primary tools: searching the etree and traversing the tree.
+he assigns a variable the xml string:
+x = """
+<rpc-reply xmlns:junos=...
+...
+</rpc-reply>
+"""
+from lxml import etree
+my_xml = etree.fromstring(x)
+<end>
+so, my_xml is an element at root
+my_xml.tag is the tag, "rpc-reply" in this case.
+we can convert an element tree to a string again, if we want...
+etree.tostring(my_xml) # get bytes string back
+etree.tostring(my_xml).decode() # to get unicode string back
+print(etree.tostring(my_xml).decode()) # to see the xml structure nicely
+my_xml.getchildren() # get children of the my_xml element (root by default)
+my_xml[0] # we can directly access indexes.  0 = first child.  1 = second child.
+my_xml.getchildren()[0].getchildren() # get's the children of the 0'th index child of root element.
+my_xml[0][0] # gets the element 'two steps down'
+for child in my_xml:
+    print(child)
+    # this is iterating through the child elements of the root, but not descendants
+    # print(child.tag) to print out the tag's.  print(child.text) to print out the text fields.
+dir(my_xml)
+.getparent
+.iterdescendants # iterate over all descendents.
+for child in my_xml.iterdescendants():
+    print(child.tag)
+
+10) lxml and findall()
+using same example string as video 9.
+my_xml = etree.fromstring(a)
+say we want to find a certain tag.  find & findall useful.
+my_xml.find("software-information")  # it looks for any tag named software-information, but only up to one level below root.
+by default, the method searches immediate children.  we can explicitly refer to the root:
+my_xml.find("./software-information") # the ./ represents the root of the xml tree.
+my_xml.find("./software-information/product-name") # searches for product-name element under the software-information element.
+my_xml.find("software-information/product-name") # also works, we don't need the explicit ./
+.find finds the first occurrence of result, and .findall finds all occurrences of result
+.find returns a string, .findall returns a list always (even with one result)
+can we do a shorthand of find or findall without stating the full path? yes:
+my_xml.findall(".//product-name") # this searches all 'paths' for product-name tag.
+my_xml.find(".//product-name") # also works.
+want the text for the first occurrence of a result?
+my_xml.findall(".//product-name")[0].text
+this is very useful for searching through xml tree.
+note: namespaces will gum up the works for searches.  How do we handle those?
+NOTE: you can find the root of a tree with my_xml.find(".") # "." syntax, like file system hierarchies.
+
+11) XML and Namespaces
+what are they? How do we use them?  In particular, how do we use them with .find and .findall functions?
+eg.
+<nf:rpc-reply xmlns:nf-"urn:ietf:params:xml:ns:netconf:base:1.0"
+xmlns="http://www.cisco.com/nxos:1.0:sysmgrCLI">
+in this example, we have two namespaces defined:
+xmlns = the default namespace
+xmlns:nf = a specific namespace.
+xml writers says there could be a tag that is used in multiple places for
+different context in each place.  e.g. show interface "interface tag" vs show lldp neighbor "interface tag"
+the xml authors wanted elements to 'be able to be fully-qualified' which is how we have namespaces.
+within tags, we call out namespaces by prepending them:  nf:rpc-reply is the rpc-reply tag in the nf namespace.
+another example is <nf:data> which is the data tag under the nf namespace.
+and another example, where the default namespace is used: <show> ...see, no colon in the tag.
+
+12) lxml and Handling Namespaces
+when we print(my_xml) or print(my_xml.tag), we'll see the namespace defined in the tag.
+{urn:ietf:foo:bar} - this is called Clark notation, with the curly brackets and the colons.
+lxml wants you to have the namespace and tag in your search.  cannot disable this.
+how to search in a namespace: (ugly)
+my_xml.find("{urn:ietf:params:xml:ns:netconf:base:1.0}data")
+and if you search for a parent/child relationship...
+my_xml.find("{urn:ietf:params:xml:ns:netconf:base:1.0}data/{urn:ietf:params:xml:ns:netconf:base:1.0}version")
+that gets crazy quick
+best workaround:
+my_xml.find("{*}data") # match 'data' in any namespace
+my_xml.find(".//{*}show")
+another way to handle is work with a namespace map.
+in python... make a dictionary, key = nf, value = 'the Clark syntax stuff'
+and to have a value for the default namespace, make a dict entry with key = None.
+eg.
+ns_map['nf'] = "urn:ietf:params:xml:ns:netconf:base:1.0"
+ns_map[None] = "http://www.cisco.com/nxos:1.0:sysmgrcli"
+to use this namespace map:
+my_xml.find("nf:data", namespaces=ns_map) # nf: maps to "urn:ietf..."
+we find: <Element {urn:ietf:params:xml:ns:netconf:base:1.0}data at 0x7f0b38686ac8>
+which has the full Clark notation prefix.
+another eg.
+my_xml.find("nf:data/show", namespaces=ns_map) # we don't need to put a prefix
+before show b/c show belongs to the default namespace.
+note: we could also find show with: my_xml.find(".//show", namespaces=ns_map)
+
+13) NX-API Overview
+uses HTTP/HTTPS for transport
+we pass XML or JSON-RPC payload
+libraries: nxapi-plumbing, pynxos, likely NAPALM in near future
+characteristics of NXAPI:
+nx-api developer sandbox at https://<switch/router IP>
+setup nxapi on the switch with:
+feature nxapi
+nxapi https port 8443
+nxapi sandbox
+<end>
+rest of video was a review of nx-api sandbox, with json vs xml versions of "show version"
+
+14) NX-API and JSON-RPC
+<code start>
+import requests # b/c want disable cert warning on self-signed certs
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from pprint import pprint
+from getpass import getpass
+from nxapi_plumbing import Device
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+device = Device(
+    api_format="jsonrpc", # this could be xml, too
+    host="nxos1.lasthop.io",
+    username="pyclass",
+    password=getpass(),
+    transport="https",
+    port=8443,
+    verify=False,
+)
+
+output = device.show("show hostname")
+print(output)
+<end code>
+the output is a dictionary with a single kvp, {'hostname': 'nxos1.twb-tech.com'}
+what methods besides .show?
+.show_list(list_of_cmds) passing a list of commands, returns a list of dictionaries, one dict per command in list.
+outer dict key is command, value is the command, key result has value = inner dict.
+.show_list(list_of_cmds, raw_text=True) - the output is a long string, not structured data
+.config() and .config_list(), output is a list of dicts, dicts containing command and result keys.  result = None is good
+.save() to save run to start.
+.checkpoint() & .rollback() - for making checkpoints and rolling back.
+
+15) NX-API and XML
+ <code start>
+ import requests # b/c want disable cert warning on self-signed certs
+ from requests.packages.urllib3.exceptions import InsecureRequestWarning
+ from pprint import pprint
+ from getpass import getpass
+ from nxapi_plumbing import Device
+
+ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+ device = Device(
+     api_format="xml", # this could be jsonrpc, too
+     host="nxos1.lasthop.io",
+     username="pyclass",
+     password=getpass(),
+     transport="https",
+     port=8443,
+     verify=False,
+ )
+
+ output = device.show("show hostname")
+ print(etree.tostring(output).decode())
+ <end code>
+ the output is an xml element tree object.  not sure how much of this answer is specific to nxos:
+ <output>
+       <body>
+       <hostname>nxos1.twb-tech.com</hostname>
+      </body>
+       <input>show hostname</input>
+       <msg>Success</msg>
+       <code>200</code>
+    </output>
+sending a list of commands:
+<start code>
+...usual stuff
+cmds = [
+    "show hostname",
+    "show version",
+    "show lldp neighbors",
+]
+output = device.show_list(cmds)
+for entry in output:
+    print(etree.tostring(entry).decode())
+    input("Hit enter to continue...")
+<end code>
+so, we get back a list of xml element trees
