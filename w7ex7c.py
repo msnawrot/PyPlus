@@ -21,7 +21,7 @@ device = Device(
 # Run the following two show commands on the nxos1 device using a single method
 # and passing in a list of commands: "show system uptime" and "show system
 # resources"
-my_cmds = ["interface loopback 126", "loopback interface 127"]
+my_cmds = ["interface loopback 126", "interface loopback 127"]
 raw_output = device.config_list(my_cmds)
 # Print the XML output from these two commands.
 for entry in raw_output:
