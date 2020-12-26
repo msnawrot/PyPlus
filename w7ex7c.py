@@ -25,4 +25,4 @@ my_cmds = ["interface loopback 126", "loopback interface 127"]
 raw_output = device.config_list(my_cmds)
 # Print the XML output from these two commands.
 for entry in raw_output:
-    print(etree.tostring(entry).decode()
+    print(etree.tostring(entry).decode())
