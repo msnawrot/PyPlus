@@ -3,7 +3,6 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from getpass import getpass
 from nxapi_plumbing import Device
 from lxml import etree
-from pprint import pprint
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -26,4 +25,4 @@ my_cmds = ["show system uptime", "show system resources"]
 raw_output = device.show_list(my_cmds)
 # Print the XML output from these two commands.
 for entry in raw_output:
-    pprint(etree.tostring(entry).decode())
+    print(etree.tostring(entry).decode())
