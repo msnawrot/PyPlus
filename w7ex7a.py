@@ -20,9 +20,7 @@ device = Device(
 # Send the "show interface Ethernet1/1" command to the device
 raw_output = device.show("show interface Ethernet1/1")
 # parse the output
-parsed_output = etree.fromstring(raw_output)
-
-print(raw_output)
+print(etree.tostring(raw_output).decode())
 int_name = ''
 int_state = ''
 int_mtu = ''
