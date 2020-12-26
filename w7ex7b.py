@@ -25,5 +25,5 @@ device = Device(
 my_cmds = ["show system uptime", "show system resources"]
 raw_output = device.show_list(my_cmds)
 # Print the XML output from these two commands.
-
-pprint(etree.tostring(raw_output).decode())
+for entry in raw_output:
+    pprint(etree.tostring(entry).decode())
