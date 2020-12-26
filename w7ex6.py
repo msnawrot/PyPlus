@@ -8,7 +8,7 @@ device = Device(
     verify=False,
     username='pyclass',
     password=getpass()
-}
+)
 
 # Send the "show interface Ethernet1/1" command to the device
 raw_output = device.show("show interface Ethernet1/1")
