@@ -2,12 +2,13 @@ import requests # b/c want disable cert warning on self-signed certs
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from getpass import getpass
 from nxapi_plumbing import Device
+from lxml import etree
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # Create an nxapi_plumbing "Device" object for nxos1
 device = Device(
-    api_format= "jsonrpc",
+    api_format= "xml",
     transport= "https",
     port=8443,
     host='nxos1.lasthop.io',
@@ -19,9 +20,13 @@ device = Device(
 # Send the "show interface Ethernet1/1" command to the device
 raw_output = device.show("show interface Ethernet1/1")
 # parse the output
-int_name = raw_output['TABLE_interface']['ROW_interface']['interface']
-int_state = raw_output['TABLE_interface']['ROW_interface']['state']
-int_mtu = raw_output['TABLE_interface']['ROW_interface']['eth_mtu']
+parsed_output = etree.fromstring(raw_output)
+
+print(raw_output)
+int_name = ''
+int_state = ''
+int_mtu = ''
+
 
 # print out the following information:
 print("Interface:", int_name + "; State:", int_state + "; MTU:", int_mtu)
