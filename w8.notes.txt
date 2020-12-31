@@ -1,0 +1,221 @@
+1) NETCONF Overview
+NETCONF is a standardized api, orig invented in 2006.  modified in RFC in 2011.
+NETCONF is standardized, programmatic interface, supported by vendors, most notably Juniper, who started it.
+NETCONF API has layers.
+Layers: - Example:
+Content - Configuration Data, Notification Data
+Operations - <edit-config>, ...
+Messages - <rpc>, <rpc-reply>, <notification>
+Secure Transport - SSH, TLS, (BEEP/TLS), (SOAP/HTTP/TLS), ...
+<end table>
+most common transport for netconf is SSH over TCP port 830
+most commomly use a higher-level library that will handle netconf itself, instead
+of you yourself handling netconf directly.
+so, probably not going to use the ncclient library, built-in python library for
+interfacing with netconf.
+juniper = use pyez, which abstracts the lower-level mechanics from you.
+inside NETCONF, XML messages are passed.  <rpc> for request, <rpc-reply> for replies
+within the messages are a small set of documented operations. getting config, editing config, locking host
+finally, within the other layers is XML data that we pass to the device or from the device.
+How does yang fit into this picture?
+NETCONF and yang are tightly coupled.
+yang is a modelling language - specifies what data should look like (what fields should
+exist and what type of data in the fields (str, int, ip/mac addr))
+"I have a yang model that exactly specifies what this interface config should look like.
+that gets converted to XML, that gets transported to remote devices via secure transport.
+and the device understands the yang model, hopefully."
+over time, the yang data model is being decoupled from the API transport (e.g. historically is NETCONF)
+REST-CONF is a rest-like data interface for transporting yang data models.
+
+2) NETCONF and ncclient
+looking at netconf and ncclient in python code:
+from ncclient import manager
+from getpass import getpass
+from pprint import pprint
+with manager.connect(
+    host="srx2.lasthop.io",
+    port=830,
+    username="pyclass",
+    password=getpass(),
+    hostkey_verify=False,
+    allow_agent=False,
+    look_for_keys=False,
+) as netconf_manager:
+    pprint(netconf_manager.server_capabilities.__dict__)
+<end program>
+note: NETCONF client/server exchange capabilities during connection startup.
+this code returns a list of the server's capabilities.
+another example:
+<start program>
+from ncclient import manager
+from getpass import getpass
+from ncclient.xml_ import new_ele
+
+conn = manager.connect(
+    host="srx2.lasthop.io",
+    username="pyclass",
+    password=getpass(),
+    device_params={"name": "junos"},
+    hostkey_verify=False,
+    allow_agent=False,
+    look_for_keys=False,
+    port=830,
+    timeout=60,
+)
+
+config = conn.get_config(source="running")
+config_xml = config.data_xml # this gives a string representation of the data structure returned
+print(config_xml)
+<end program>
+
+3) Juniper PyEZ - Creating a Basic Connection
+Juniper created PyEZ, which abstracts a lot of details when talking NETCONF to Juniper devices.
+real name of the module is junos-eznc
+<start program>
+from jnpr.junos import Device
+from getpass import getpass
+from pprint import pprint
+
+a_device = Device(host="srx2.lasthop.io", user="pyclass", password=getpass())
+a_device.open()
+pprint(a_device.facts)
+<end program>
+what we get back is structured data:
+* fqdn, hostname, model #, serial #, etc.
+
+4) Juniper PyEZ - Tables (Part1)
+Juniper has a set of predefined tables that we use to gather info - way way beyond
+what we get with .facts
+example code
+<start program>
+from jnpr.junos import Device
+from jnpr.junos.op.ethport import EthPortTable
+
+a_device = Device(host="srx2.lasthop.io", user="pyclass", password=getpass())
+a_device.open()
+
+ports = EthPortTable(a_device)
+ports.get() # this is the line that gathers the table info.  returns data in dictionary-like object. keys, values, and items.
+
+print(ports)
+print(ports.keys())
+pprint(ports.values())
+pprint(ports.items())
+<end program>
+NOTE: while .items() turns a dictionary-like data structure into 'a list of tuples', in this case the lower-level data was a list of tuples.
+NOTE: also, .keys, and .valuess return a dict_keys obj and a dict_values obj respectively. each obj contains a list.
+Kirk goes into 'displaying the results as a dict instead of a list of tuples'
+list(ports['fe-0/0/7'].items()) # a list of tuples
+dict(ports['fe-0/0/7'].items()) # a dictionary
+we can iterate over some of the returned data structure like so:
+for k in ports:
+    print(k)
++=-
+for k, v in ports.items():
+    print(k)
+    print(v)
++=-
+there is a long list of predefined tables in pyez, and we also can create our own tables.
+
+5) Juniper PyEZ - Tables (Part2)
+another example with the arp table:
+<skipping parts of program through a_device.open(), use ex. in 4) >
+arp_entries = ArpTable(a_device)
+arp_entries.get()
+<end program>
+you need skills to be able to look through and handle the structured data returned.
+the first thing Kirk does is dir(something) to see what methods are available for it.
+then help(something) with something = the class, eg help(arp_entries)
+in dir's output, look for .items, .keys, .values, which together mean this class works
+like a dictionary.
+in arptable, top-level keys are mac-addresses, and values are an ArpView object.
+now, repeat dir, but on the ArpView object: dir(arp_entries['00:62:ec:29:70:fe'])
+...and the ArpView is also a dict-like obj, b/c it also has .keys, .values, & .items
+find keys.
+the loop is like: dir(it), it.keys(), it['key'], dir(it['key']), it['key1'].keys()...
+this loop peels back the structure, layer by layer.
+another strategy, it.items(), or pprint(it) - to see the overall structure all at once.
+
+6) Juniper PyEZ - Configuration Basics
+example code:
+<start program>
+from jnpr.junos import Device
+from jnpr.junos.utils.config import Config
+from getpass import getpass
+a_device = Device(host="srx2.lasthop.io", user="pyclass", password=getpass())
+a_device.open()
+a_device.timeout = 60
+cfg = Config(a_device)
+cfg.lock() # Junos has a lock/unlock mechanism used with config changes. does what you expect.
+cfg.load("set system host-name test123", format="set", merge=True) # merge or replace.  makes more sense in context of routes than it does in context of hostname
+cfg.rollack(0) # this tells Juniper to rollback the candidate cfg to the current running config state. returns True if success.
+cfg.load("set system host-name test123", format="set", merge=True)
+print(cfg.diff()) # see differences b/w the candidate and running configs.
+cfg.commit() # commits the change. candidate -> running config.  this is a slow step.
+cfg.unlock()
+<end program>
+can add comment to commit.  cfg.commit(comment="Making hostname change")
+
+7) Juniper PyEZ - Config Changes from a File
+example code is almost identical to above.
+<start program>
+... # same imports as video 6, same Device class use, same Config class use.  first difference is cfg.load():
+cfg.load(path="test_config.conf", format="text", merge=True)
+# file format is Juniper's curly brace notation.
+eg.
+routing-options {
+    static {
+        route 1.1.1.0/24 next-hop 10.220.88.1;
+    }
+}
+<end>
+using PyEZ, config files, and replace (not merge), we have two places to mark 'replace'
+1) an attribute in the cfg.load() call; merge=False
+2) a string in the conig file; under 'routing-options {', before 'static' is 'replace:' (indented like 'static')
+
+8) Juniper PyEZ - Configuration and XML
+we've used set and conf (the {} ) notation to make changes.  Now, see how we make
+changes with XML notation.
+holy cow, it's almost identical to code in 6) & 7), with this exception:
+cfg.load(path="test_config.xml", format="xml", merge=True)
+in python, the only difference is format="xml"
+the config file is simply xml formatted. eg.
+<configuration>
+        <routing-options>
+            <static>
+                <route>
+                    <name>1.1.4.0/24</name>
+                    <next-hop>10.220.88.1</next-hop>
+                </route>
+            </static>
+        </routing-options>
+</configuration>
+how do I work out what the xml should look like?
+show configuration routing-options | display xml
+Kirk prefers xml notation vs set or conf notation.
+Now, he shows how to use junos's commit confirm - which means "commit, and if I
+don't receive another commit in x minutes, rollback."
+cfg.commit(confirm=1) # 1 minute to send a second commit or change backs out.
+cfg.commit returns a True
+another cool feature.  in the cfg.load(), omit merge=x and replace with overwrite=True,
+and what will happen is wipe the config and then config what you're sending now.
+
+9) Juniper PyEZ - RPC
+PyEZ can use an RPC request to retrieve information from the device.
+code example:
+from jnpr.junos import Device
+from lxml import etree
+from getpass import getpass
+juniper_srx = {"host": "srx2.lasthop.io", "user": "pyclass", "password": getpass()}
+a_device = Device(**juniper_srx)
+a_device.open()
+xml_out = a_device.rpc.get_software_information() # this is new.
+print(etree.tostring(xml_out, encoding="unicode"))
+
+<end>
+a lot to unpack:
+a_device.rpc. = make the rpc call (remember rpc encapsulated in netconf)
+.get_software_information() = we got this from output of the command "show version | display xml rpc"
+    and we converted the - from the output to _ in our python code, b/c python naming convention.
+    and we append () to the end, making this text into a method.
+printing the output to screen looks very much like "show version | display xml" but without the <rpc-reply> element.
