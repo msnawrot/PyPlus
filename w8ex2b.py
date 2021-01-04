@@ -36,6 +36,6 @@ if __name__ == "__main__":
         # gather_arp_table
         arps = gather_arp_table(my_device)
 
-    if my_device && routes && arps:
+    if my_device and routes and arps:
         # print_output
         print_output(my_device, routes, arps)
