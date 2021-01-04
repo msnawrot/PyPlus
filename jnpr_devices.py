@@ -4,4 +4,5 @@ srx2 = {
     'host': "srx2.lasthop.io",
     'password': getpass(),
     'user': "pyclass",
+    'port': 830,
 }
