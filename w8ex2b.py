@@ -22,11 +22,16 @@ def gather_arp_table(device):
     return temparps
 
 def print_output(device, table1, table2):
+    print("\b\b\b\b\b\b\b\b\b")
     print("Hostname :", device.hostname)
     print("NETCONF port :", device.port)
     print("Username :", device.user)
-    print("Routing Table :\n", table1)
-    print("ARP Table :\n", table2)
+    print("Routing Table :\n")
+    for route in table1:
+        print(route)
+    print("ARP Table :\n")
+    for arp in table2:
+        print(arp)
 
 if __name__ == "__main__":
     # make a Device
