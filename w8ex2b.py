@@ -1,4 +1,4 @@
-import jnpr_devices
+from jnpr_devices import srx2
 from jnpr.junos import Device
 from jnpr.junos.op.routes import RouteTable
 from jnpr.junos.op.arp import ArpTable
@@ -20,7 +20,7 @@ def gather_arp_table(device):
 def print_output(device, table1, table2):
     print("Hostname :", device['host'])
     print("NETCONF port :", device['port'])
-    print("Username :", device['username'])
+    print("Username :", device['user'])
     print("Routing Table :\n", table1)
     print("ARP Table :\n", table2)
 
