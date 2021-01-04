@@ -12,10 +12,14 @@ def check_connected(device):
         raise e
 
 def gather_routes(device):
-    return RouteTable(device)
+    temproutes = RouteTable(device)
+    temproutes.get()
+    return temproutes
 
 def gather_arp_table(device):
-    return ArpTable(device)
+    temparps = ArpTable(device)
+    temparps.get()
+    return temparps
 
 def print_output(device, table1, table2):
     print("Hostname :", device['host'])
@@ -39,3 +43,4 @@ if __name__ == "__main__":
     if my_device and routes and arps:
         # print_output
         print_output(my_device, routes, arps)
+    
