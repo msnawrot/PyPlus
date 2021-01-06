@@ -17,5 +17,5 @@ if check_connected(my_device) == True:
     cfg = Config(my_device)
     cfg.lock()
     print("config locked")
-    cfg.load(path="conf.txt", format="set", merge=True)
+    cfg.load(path="conf.txt", format="text", merge=True)
     print(cfg.diff())
