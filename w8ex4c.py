@@ -34,5 +34,5 @@ if check_connected(my_device) == True:
     post_routes = gather_routes(my_device)
     pre_routes = pre_routes.keys()
     post_routes = post_routes.keys()
-    non_match = non_match_elements(pre_routes, post_routes)
+    non_match = non_match_elements(post_routes, pre_routes)
     print("New routes: ", non_match)
