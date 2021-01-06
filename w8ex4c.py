@@ -19,3 +19,6 @@ if check_connected(my_device) == True:
     print("config locked")
     cfg.load(path="conf.txt", format="text", merge=True)
     print(cfg.diff())
+    cfg.commit()
+    cfg.unlock()
+    post_routes = gather_routes(my_device)
