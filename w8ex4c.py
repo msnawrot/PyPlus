@@ -32,5 +32,7 @@ if check_connected(my_device) == True:
     print("config committed")
     cfg.unlock()
     post_routes = gather_routes(my_device)
-    non_match = non_match_elements(post_routes.keys(), pre_routes.keys())
+    pre_routes = pre_routes.keys()
+    post_routes = post_routes.keys()
+    non_match = non_match_elements(pre_routes, post_routes)
     print("New routes: ", non_match)
