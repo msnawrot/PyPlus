@@ -4,6 +4,7 @@ from jnpr.junos.op.routes import RouteTable
 from jnpr.junos.op.arp import ArpTable
 from w8ex2b import check_connected
 from jnpr.junos.utils.config import Config
+from jnpr.junos.exception import LockError
 
 if __name__ == "__main__":
     # make a Device
