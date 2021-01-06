@@ -5,5 +5,5 @@ from pprint import pprint
 
 my_device = Device(**srx2)
 my_device.open()
-xml_out = my_device.rpc.get_interface_information()
+xml_out = my_device.rpc.terse()
 print(etree.tostring(xml_out, encoding="unicode"))
