@@ -14,7 +14,7 @@ if __name__ == "__main__":
     if check_connected(my_device) == True:
         cfg = Config(my_device)
         cfg.lock()
-#    try:
-#        cfg.lock()
-#    except LockError:
-#        print("Lock Error encountered.")
+    try:
+        cfg.lock()
+    except LockError:
+        print("Lock Error encountered.")
