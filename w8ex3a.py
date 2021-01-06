@@ -2,7 +2,7 @@ from jnpr_devices import srx2
 from jnpr.junos import Device
 from jnpr.junos.op.routes import RouteTable
 from jnpr.junos.op.arp import ArpTable
-import w8ex2b import check_connected
+from w8ex2b import check_connected
 from jnpr.junos.utils.config import Config
 
 if __name__ == "__main__":
