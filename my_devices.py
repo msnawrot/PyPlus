@@ -16,3 +16,5 @@ arista1 = {
     'password': my_password,
     'optional_args':{},
 }
+
+network_devices = [cisco3, arista1]
