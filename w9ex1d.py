@@ -14,7 +14,7 @@ def create_connection(obj_dict):
     return conn
 
 
-if "__name__" == "__main__":
+if __name__ == "__main__":
     connections = []
     connections.append(create_connection(cisco3))
     connections.append(create_connection(arista1))
