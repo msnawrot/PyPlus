@@ -1,0 +1,105 @@
+1) NAPALM Overview
+NAPALM is a library
+purpose is to create a standard set of operations across a range of platforms
+operations fall into two general categories: config ops & getter ops
+Uniform API programmatic interface
+  eg's: get_facts(), get_arp_table(), get_interfaces()
+I call those functions, and behind the scenes:
+    if Juniper = use PyEZ
+    if Arista = use pyeapi
+    if NX-OS = use nxapi-plumbing (api) or netmiko (ssh)
+    if IOS-XR = use pyiosxr
+    if IOS = use netmiko
+more details about the uniform programmatic interface:
+    the data structure returned from commands is the same regardless of platform,
+    including the key names.
+the five platforms listed above are core.  in addition, people have contributed
+what is called Community Drivers, which support, to some extent, other vendors.
+also integrations
+ NAPALM and Salt
+ NAPALM and Ansible
+ even NAPALM and Puppet
+
+2) NAPALM - Simple Connection
+how do we install napalm? pip install NAPALM
+NOTE: to upgrade python modules, use pip install napalm==2.4.0 # name==version
+that will update the modules
+
+example code
+<code start>
+# first, optional import to suppress ssl cert warnings
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# done with optional section
+from napalm import get_network_driver
+# he created a dict this way for no particular reason, and end result is same as {key:value,key:value}
+cisco3 = dict(
+    hostname="cisco3.lasthop.io",
+    device_type="ios",
+    username="pyclass",
+    password=getpass(),
+    optional_args={},
+)
+# he created a dict this way for no particular reason, and end result is same as {key:value,key:value}
+device_type = cisco3.pop("device_type") # pop, b/c "device_type" is an invalid kwarg to napalm
+driver = get_network_driver(device_type) # napalm finds the proper class for the device_type
+device = driver(**cisco3) # now create instance of said class
+device.open() # establishes connection
+output = device.get_facts() # and note, b/c device_type is ios, we're using get_facts for what is netmiko ssh under the hood
+pprint(output)
+<end code>
+NOTE: once the device is created (instance of a particular class), the rest of the code is
+the same regardless of class type!
+
+3) NAPALM - Getters
+napalm.readthedocs.io - this site has an table of supported getters by platform
+rest of video is showing use, which is device.getfoobar()
+and showing the results across platforms; each getter results in same data structure regardless of platform
+
+4) NAPALM - Configuration Merge
+NAPALM Configuration Operations:
+  device.load_merge_candidate() # just the set of things specified are changed
+  device.load_replace_candidate() # this is a full configuration replace.
+  device.compare_config()
+  device.discard_config()
+  device.commit_config()
+  device.rollback() # rollsback the config to that prior to last commit_config()
+tradeoffs:
+merge has less chance to break something unintentionally
+replace 'things like diffs work better if we do a full replace'
+  another thing is the atomic nature of the transaction - either the entire transaction goes through or none,
+  which in some way works better with replace than merge.
+I guess I should just listen to Kirk and his experience on these platforms.
+so, if we think of our device configs as a file that we swap out, replace operation works much better than merge.
+rest of video focuses on merge operation
+we call .load_merge_candidate() with either a string or a file.
+we stage a candidate config,
+and with a candidate config, we can: compare_config(), discard_config(), or commit_config()
+There are platform specific nuances to be aware of - see NAPALM documentation for all: examples
+cisco IOS - must enable archive, also must either enable SCP or specify an inline file transfer
+NX-OS - replace configuration requires a checkpoint file.
+example code for a merge:
+<start code>
+from napalm import get_network_driver
+# skip code where he imports requests, disables InsecureRequestWarning, makes device variables,
+# creates the instance of the driver, creates the instance of the device, and .open() the connection
+device.load_merge_candidate(filename="nxos-merge.conf")
+print(device.compare_config())
+device.discard_config()
+print(device.compare_config()) # should be no diffs
+device.load_merge_candidate(filename="nxos-merge.conf")
+device.commit_config()
+# device.rollback() # commented out; just showing the syntax.
+<end code>
+
+5) NAPALM - Configuration Replace
+he's demoing on ios, and he has enabled archive and set path flash:cisco3-cfg, and also has scp enabled
+the way we get 'candidate-cfg-like' experience on ios is by scping candidate_config file to ios flash
+his config file for ios has everything from a show run, except the build version at the very top.
+it even includes 'end' on the last line of the cfg file.
+Kirk recommends that when doing this replace on ANY platform, the very first config will be
+identical to the device's running config, so that .compare_config() has no diffs
+on IOS, there is an alternative to using scp to copy candidate config file to device,
+and that is an inline transfer. syntax follows:
+optional_args = {"inline_transfer": True} # this could be in a dictionary, too.
