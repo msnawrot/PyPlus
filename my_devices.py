@@ -1,3 +1,4 @@
+from getpass import getpass
 my_password = getpass()
 
 cisco3 = {
