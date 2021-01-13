@@ -23,5 +23,5 @@ if __name__ == "__main__":
         print()
         print(obj)
         print()
+        print("Facts about", obj.platform)
         pprint(obj.get_facts())
-        print()
