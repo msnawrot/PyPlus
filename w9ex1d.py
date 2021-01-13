@@ -1,4 +1,4 @@
-from my_devices.py import cisco3, arista1
+from my_devices import cisco3, arista1
 from getpass import getpass
 from napalm import get_network_driver
 from pprint import pprint
@@ -25,4 +25,3 @@ if "__name__" == "__main__":
         print()
         pprint(obj.get_facts())
         print()
-        
