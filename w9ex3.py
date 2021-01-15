@@ -24,13 +24,13 @@ for conn in connections_list:
     print(conn.compare_config())
     print()
     my_answer = input("Press Y/y to push the above config. Press N/n to not.")
-    if my_answer.lower() = "y":
+    if my_answer.lower() == "y":
         conn.commit_config()
         print("Configuration pushed")
         print()
         print("Below is another config diff, and it should be identical.")
         print(conn.compare_config())
-    elif my_answer.lower() = "n":
+    elif my_answer.lower() == "n":
         print("Config not committed.")
     else:
         my_answer = input(
