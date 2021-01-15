@@ -30,3 +30,4 @@ for conn in connections_list:
 # 2d create anothe func in my_functions.py, called create_backup.
 for conn in connections_list:
     create_backup(conn)
+    conn.close()
