@@ -1,4 +1,5 @@
 import os.path
+from napalm import get_network_driver
 
 def open_napalm_connection(obj_dict):
     # create a duplicate of the obj_dict so that the original isn't modified
