@@ -15,7 +15,7 @@ def create_backup(conn_obj):
     config_dict = conn_obj.get_config("running")
     hostname = str(conn_obj.hostname)
     filename = hostname + ".txt"
-    cfg_str = config_dict['startup']['running']
+    cfg_str = config_dict['running']
     with open(filename, "w") as fw:
         fw.write(cfg_str)
     if os.path.exists(filename):
