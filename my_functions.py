@@ -12,10 +12,10 @@ def open_napalm_connection(obj_dict):
     return conn
 
 def create_backup(conn_obj):
-    config = conn_obj.get_config("running")
+    config_dict = conn_obj.get_config("running")
     hostname = str(conn_obj.hostname)
     filename = hostname + ".txt"
-    cfg_str = str(config)
+    cfg_str = config_dict['startup']['running']
     with open(filename, "w") as fw:
         fw.write(cfg_str)
     if os.path.exists(filename):
