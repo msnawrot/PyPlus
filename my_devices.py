@@ -17,4 +17,16 @@ arista1 = {
     'optional_args':{},
 }
 
-network_devices = [cisco3, arista1]
+# network_devices = [cisco3, arista1]
+
+# 4a - add nxos1 to this file.
+
+nxos1 = {
+    'hostname':"nxos1.lasthop.io",
+    'device_type':"nxos",
+    'username':"pyclass",
+    'password': my_password,
+    'optional_args':{"port": 8443},
+}
+
+network_devices = [cisco3, arista1, nsox1]
