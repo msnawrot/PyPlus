@@ -4,7 +4,7 @@ from my_functions import open_napalm_connection, create_checkpoint
 # Create a Python script that stages a complete configuration replace operation
 # (using the checkpoint file that you just retrieved and modified).
 print("Opening connection")
-conn = open_napalm_connection(device)
+conn = open_napalm_connection(nxos1)
 print("Loading candidate config (replace)")
 conn.load_replace_candidate(filename="nxos1.lasthop.io-new_checkpoint.txt")
 
