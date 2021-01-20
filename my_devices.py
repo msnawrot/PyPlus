@@ -29,4 +29,4 @@ nxos1 = {
     'optional_args':{"port": 8443},
 }
 
-network_devices = [cisco3, arista1, nsox1]
+network_devices = [cisco3, arista1, nxos1]
