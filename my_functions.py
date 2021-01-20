@@ -22,3 +22,10 @@ def create_backup(conn_obj):
         print("The config for {} was backed up successfully in {}.".format(hostname, filename))
     else:
         print("Backup failed for {}.".format(hostname))
+
+def create_checkpoint(conn_obj):
+    checkpoint = conn_obj._get_checkpoint_file()
+    hostname = str(conn_obj.hostname)
+    filename = hostname + "-checkpoint.txt"
+    with open(filename, "w") as fw:
+        fw.write(checkpoint)
