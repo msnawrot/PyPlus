@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from w10my_devices import network_devices as devices
 from datetime import datetime
 from w10my_functions import ssh_command2
@@ -14,9 +14,8 @@ for device in devices:
     future = pool.submit(ssh_command2, my_command, device)
     futures.append(future)
 
-wait(futures)
 
-for future in futures:
+for future in as_completed(futures):
     print("Result: " + future.result())
 
 print("\nElapsed time: " + str(datetime.now() - start_time))
