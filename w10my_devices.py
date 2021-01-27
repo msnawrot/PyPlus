@@ -26,7 +26,7 @@ arista2 = {
 
 srx2 = {
     'hostname':"srx2.lasthop.io",
-    'device_type':"junos",
+    'device_type':"juniper_junos",
     'username':"pyclass",
     'password': my_password,
 }
