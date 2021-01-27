@@ -1,4 +1,4 @@
-from Netmiko import ConnectHandler
+from netmiko import ConnectHandler
 from w10my_devices import network_devices as devices
 from datetime import datetime
 
