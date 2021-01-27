@@ -1,6 +1,6 @@
 from netmiko import ConnectHandler
 
-def ssh_command(command, **device):
+def ssh_command(command, device):
     print("=" * 40)
     print("Device: " + device)
     connection = ConnectHandler(**device)
