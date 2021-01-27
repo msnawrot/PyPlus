@@ -17,4 +17,4 @@ for device in devices:
     print(show_command(my_command, **device))
     print("+" * 40)
 
-print("Elapsed time: " + datetime.now() - str(start_time))
+print("Elapsed time: " + str(datetime.now() - str(start_time)))
