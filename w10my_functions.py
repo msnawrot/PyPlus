@@ -2,7 +2,7 @@ from netmiko import ConnectHandler
 
 def ssh_command(command, **device):
     print("=" * 40)
-    print("Device: " + device['host'])
+    print("Device: " + device)
     connection = ConnectHandler(**device)
     output = connection.send_command(command)
     print(output)
