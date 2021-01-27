@@ -13,7 +13,7 @@ start_time = datetime.now()
 
 for device in devices:
     print("=" * 40)
-    print("Device: " + device['hostname'])
+    print("Device: " + device['host'])
     print(show_command(my_command, **device))
     print("+" * 40)
 
