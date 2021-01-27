@@ -11,7 +11,6 @@ for device in devices:
 
 main_thread = threading.currentThread()
 for some_thread in threading.enumerate():
-for some_thread in threading.enumerate():
     if some_thread != main_thread:
         print(some_thread)
         some_thread.join()
