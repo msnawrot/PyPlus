@@ -13,7 +13,7 @@ arista1 = {
     'device_type':"arista_eos",
     'username':"pyclass",
     'password': my_password,
-    'global_delay_factgor': 4,
+    'global_delay_factor': 4,
 }
 
 arista2 = {
@@ -21,7 +21,7 @@ arista2 = {
     'device_type':"arista_eos",
     'username':"pyclass",
     'password': my_password,
-    'global_delay_factgor': 4,
+    'global_delay_factor': 4,
 }
 
 srx2 = {
