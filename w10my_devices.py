@@ -3,14 +3,14 @@ my_password = getpass()
 
 cisco3 = {
     'hostname':"cisco3.lasthop.io",
-    'device_type':"ios",
+    'device_type':"cisco_ios",
     'username':"pyclass",
     'password': my_password,
 }
 
 arista1 = {
     'hostname':"arista1.lasthop.io",
-    'device_type':"eos",
+    'device_type':"arista_eos",
     'username':"pyclass",
     'password': my_password,
     'global_delay_factgor': 4,
@@ -18,7 +18,7 @@ arista1 = {
 
 arista2 = {
     'hostname':"arista2.lasthop.io",
-    'device_type':"eos",
+    'device_type':"arista_eos",
     'username':"pyclass",
     'password': my_password,
     'global_delay_factgor': 4,
