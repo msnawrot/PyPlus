@@ -1,0 +1,187 @@
+1) Concurrency Overview
+What is concurrency?
+we want multiple things happening within the same time slice.
+eg. we want to SSH to 1000 devices. one at a time would take a very long time to complete.
+concurrency isn't parallelism.
+parallelism is "at any given point in time, there are actually > 1 thing executing"
+which implies there is more than one core/cpu
+concurrency is multiple jobs happening within a timeslice, but at any given moment,
+only one job is executing.
+all parallelism is concurrency, but not vice versa
+
+2) Threads Overview
+at a high level, three main ways to achieve concurrency:
+threads, processes, and asynchronous (single threading, non-blocking asynchronous)
+Kirk will cover threads and processes, but skip asynchronous ('overly complicated for our purposes')
+Threads:
+  multiple threads within one process (one process id, one memory space)
+  job scheduler on a system determines which thread(s) is chosen to be run.
+  complexities:
+    1) potential race conditions - job schedule picks what executes when, we don't
+    2) may need introduce locks, which could cause a deadlock.
+        deadlock = thread 1 gets lock on a resource, a DB
+        thread 5 must get access to the same resource.
+        if thread 1 never releases, thread 5 never gets access, and system can lock.
+    3) global interpreter lock - our python is C based.  threads implemented in
+    a way with the GIL.  the GIL says "if we have a single processes, within that
+    process, only a single thing can execute at one point in time."
+    what if we have 10 cores?  only one core is used for that process, period.
+    This is a huge deal if we are 'cpu bound,' but in network automation, we are
+    almost always IO bound, which means we're waiting for some remote device to respond.
+    job scheduler realizes when a thread is waiting on IO, and job scheduler starts
+    another thread.
+  sharing data between threads - NOT using a shared data structure or shared variables
+  we use something called a threadsafe queue to pass data b/w threads.
+
+
+3) Multiple Processes Overview
+basically: process1 has thread1, process2 has thread2, processN has threadN
+each process has one thread.  can do multiple threads per device, but we're keeping
+this simple for now.
+each process executes an SSH session to the remote devices
+ps shows each process.  each process has own memory
+GIL will allow multiple python processes running on different cores, in parallel.
+we still can have problems with locks, deadlocks, and race conditions.
+the idea of sharing data between processes gets harder than if it's sharing data
+between threads.  So, we have to start thinking about inter process communication.
+multiple processes vs multiple threads:
+multiple processes will take more time and resources to spin up than threads, and
+the tradeoff is we aren't constrained by the GIL.  but if we are IO bound, then
+we aren't too concerned about GIL constraints.
+in Kirk's experience, he's seen no significant difference in runtime when automating
+networking via threads vs via processes
+
+4) Threads Legacy Code
+<sample code start>
+import threading
+from datetime import datetime
+from Netmiko import ConnectHandler
+from my_devices import device_list as devices
+start_time = datetime.now()
+def show_version():
+   blah
+for a_device in devices:
+    my_thread = threading.Thread(target=show_version, args=(a_device,)) # show_version is a function, a callable, but typed here without ()
+    my_thread.start()
+# at this point in code, all threads are executing.
+main_thread = threading.currentThread()
+for some_thread in threading.enumerate(): # getting all the threads we have, and iterating through them
+    if some_thread != main_thread: # skip main thread, which will never be complete.
+        print(some_thread)
+        some_thread.join() # a wierd name - 'wait till this thread is complete.'
+
+print("\nElapsed time: " + str(datetime.now() - start_time))
+<end sample code>
+this script has a race condition to printing to standard out.  to deal with this:
+either a) send all output back to the thread-that-started-other-threads for printing,
+or b) send all output to a single, separate thread purpose-built for receiving output & printing.
+in legacy method - we use a thread save queue to store the output
+
+5) Multiprocessing Legacy Code
+<sample code start>
+from multiprocessing import Process
+from datetime import datetime
+from Netmiko import ConnectHandler
+from my_devices import device_list as devices
+start_time = datetime.now()
+def show_version():
+   blah
+start_time = datetime.now()
+
+procs = []
+for a_device in devices:
+    my_proc = Process(target=show_version, args=(a_device,))
+    my_proc.start()
+    procs.append(my_proc)
+
+for a_proc in procs:
+    a_proc.join() # again, waits till the process is completed
+
+print("\nElapsed time: " + str(datetime.now() - start_time))
+<end sample code>
+pretty much the same as with legacy multi threading.  but swap out threading with Process
+and don't need to worry about avoiding the main process.
+
+6) Concurrent Futures Intro
+python 3.2, new feature added called concurrent futures.  makes certain things easier:
+easier to switch between threading or multiprocessing and how to communicate b/w
+threads/processes.
+<to import:>
+from concurrent.futures import ThreadPoolExecutor
+<main section of code:>
+max_threads = 4
+pool = ThreadPoolExecutor(max_threads)
+future = pool.submit(ssh_conn, device_list[0])
+
+print(future.done()) # checks if the thread is done, returns True or False
+time.sleep(5)
+print(future.done())
+
+print("Result: " + future.result()) # .result() is the return from the ssh_conn function which was run in a thread.
+<end code example>
+to use processes instead of threads, replace import ThreadPoolExecutor with a process-equivalent.
+<another example, using 'wait'>
+from concurrent.futures import ThreadPoolExecutor, wait
+max_threads = 4
+pool = ThreadPoolExecutor(max_threads)
+future_list = []
+for a_device in device_list:
+    future = pool.submit(ssh_conn, a_device) #submits 'it'' into thread pool, and thread pool manages 'running it when a thread becomes available'
+    future_list.append(future)
+
+wait(future_list) # waits until all the pending threads are done.
+
+for future in future_list:
+    print("Result: " + future.result())  # automatically, the child threads are passing output to the main thread.
+<end example code>
+NOTE: we won't see any output until all threads are finished.
+
+7) Concurrent Futures as_completed
+as_completed gets imported, and no longer import wait:
+<code example start>
+from concurrent.futures import ThreadPoolExecutor, as_completed
+max_threads = 4
+pool = ThreadPoolExecutor(max_threads)
+future_list = []
+for a_device in device_list:
+    future = pool.submit(ssh_conn, a_device)
+    future_list.append(future)
+
+for future in as_completed(future_list): # as each thread completed, we'll print out the results, incrementally, as they happen
+    print("Result: " + future.result())
+<end example code>
+the notion of a context manager: we haven't been cleaning up the threadpool as it is done
+we can use a context manager to help clean up the threads:
+<start code>
+with ThreadPoolExecutor(max_threads) as pool:
+    future_list = []
+    for a_device in device_list:
+        future = pool.submit(ssh_conn, a_device)
+        future_list.append(future)
+
+    for future in as_completed(future_list):
+        print("Result: " + future.result())
+<end code>
+advantage is that the ThreadPoolExecutor is cleaned up automatically when done.
+
+8) Concurrent Futures map
+<example code start>
+from concurrent.futures import ThreadPoolExecutor, wait, as_completed
+max_threads = 4
+with ThreadPoolExecutor(max_threads) as pool:
+    results_generator = pool.map(ssh_conn, device_list) # ssh_conn a func earlier in script.
+    # what we did in last line was use .map method on our pool instance, and passed the
+    # thing to run as well as a LIST of devices.  each element in list gets it's own thread.
+    for results in results_generator: # we get output as the threads end.
+        print(result)
+<example code end>
+this is a much simpler coding for starting threads based off a list of devices.
+
+9) Concurrent Futures Processes
+point 1: the callable used in pool.map or pool.submit doesn't have to return a string,
+he has an example where the return is a dictionary
+point 2: his map script can work with processes as easily as it does with threads:
+from: from concurrent.futures import ThreadPoolExecutor
+to: from concurrent.futures import ProcessPoolExecutor
+and from: with ThreadPoolExecutor(max_threads) as pool:
+to: with ProcessPoolExecutor(max_threads) as pool:
