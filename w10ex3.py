@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from w10my_devices import network_devices as devices
 from datetime import datetime
 from w10my_functions import ssh_command2
