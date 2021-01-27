@@ -7,7 +7,7 @@ my_command = "show version"
 start_time = datetime.now()
 
 for device in devices:
-    my_thread = threading.Thread(target=ssh_command, args=(device, my_command))
+    my_thread = threading.Thread(target=ssh_command, args=(my_command, device))
     my_thread.start()
 
 main_thread = threading.currentThread()
