@@ -9,7 +9,7 @@ start_time = datetime.now()
 max_threads = 4
 
 with ProcessPoolExecutor(max_threads) as pool:
-    results_generator = pool.map(ssh_command2, my_command, device)
+    results_generator = pool.map(ssh_command2, my_command, devices)
     for result in results_generator:
         print("Result: " + result)
 
