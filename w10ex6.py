@@ -1,6 +1,7 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from w10my_devices import network_devices as devices
 from datetime import datetime
+from netmiko import ConnectHandler
 
 # defining ssh_command2 here b/c the version in w10my_functinos has opposite order of arguments
 def ssh_command2(device, command):
