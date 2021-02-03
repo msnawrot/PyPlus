@@ -10,13 +10,17 @@ def ssh_command2(device, command):
     connection.disconnect()
     return output
 
-my_command = "show version"
 start_time = datetime.now()
+max_procs = 4
 
-max_threads = 4
-
-with ProcessPoolExecutor(max_threads) as pool:
-    results_generator = pool.map(ssh_command2, devices, my_command)
+with ProcessPoolExecutor(max_procs) as pool:
+    cmd_list = []
+    for device in devices:
+        if "junos" in device["device_type"]:
+            cmd_list.append("show arp")
+        else:
+            cmd_list.append("show ip arp")
+    results_generator = pool.map(ssh_command2, devices, cmd_list)
     for result in results_generator:
         print("Result: " + result)
 
