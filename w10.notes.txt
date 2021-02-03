@@ -176,6 +176,15 @@ with ThreadPoolExecutor(max_threads) as pool:
         print(result)
 <example code end>
 this is a much simpler coding for starting threads based off a list of devices.
+IN MY EXPERIENCE; I could pass pool.map a callable, a device_list iterable, and a command (2nd argument for the callable)
+but it only works if the command is in a list...failed when the command was a string.
+<start example code>
+with ProcessPoolExecutor(max_procs) as pool:
+    cmd_list = ["show ip arp"]
+    results_generator = pool.map(ssh_command2, devices, cmd_list)
+    for result in results_generator:
+        print("Result: " + result)
+<end example code>
 
 9) Concurrent Futures Processes
 point 1: the callable used in pool.map or pool.submit doesn't have to return a string,
