@@ -22,6 +22,6 @@ with ProcessPoolExecutor(max_procs) as pool:
             cmd_list.append("show ip arp")
     results_generator = pool.map(ssh_command2, devices, cmd_list)
     for result in results_generator:
-        print("Result: " + result)
+        print("Result: \n" + result)
 
 print("\nElapsed time: " + str(datetime.now() - start_time))
