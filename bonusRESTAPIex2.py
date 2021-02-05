@@ -10,18 +10,6 @@ if __name__ == "__main__":
     #     http_headers["authorization"] = "Token {}".format(token)
 
     response = requests.get(url, headers=http_headers, verify=False)
-    response = response.json()
-
-    pprint(response)
-
-
-if __name__ == "__main__":
-    url = "https://netbox.lasthop.io/api/"
-    http_headers = {"accept": "application/json; version=2.4;"}
-    if token:
-        http_headers["authorization"] = "Token {}".format(token)
-
-    response = requests.get(url, headers=http_headers, verify=False)
 
     # print the HTTP status code, the reesponse text, the json response, and the
     # http response headers.
