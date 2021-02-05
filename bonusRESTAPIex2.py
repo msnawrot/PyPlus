@@ -26,8 +26,8 @@ if __name__ == "__main__":
 
     print("*" * 10)
     print("\nRetreiving all endpoints under /api/dcim parent\n")
-    url = "https://netbox.lasthop.io/api/dcim/devices/"
+    url = "https://netbox.lasthop.io/api/dcim/"
     token = os.environ["NETBOX_TOKEN"]
-    http_headers['Authorization'] = "Token " + token 
+    http_headers['Authorization'] = "Token " + token
     response = requests.get(url, headers=http_headers, verify=False)
     pprint(response.json())
