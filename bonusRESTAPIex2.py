@@ -6,8 +6,8 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 if __name__ == "__main__":
     url = "https://netbox.lasthop.io/api/"
     http_headers = {"accept": "application/json; version=2.4;"}
-    if token:
-        http_headers["authorization"] = "Token {}".format(token)
+    # if token:
+    #     http_headers["authorization"] = "Token {}".format(token)
 
     response = requests.get(url, headers=http_headers, verify=False)
     response = response.json()
