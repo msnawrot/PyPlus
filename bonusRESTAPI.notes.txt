@@ -1,0 +1,196 @@
+1) REST API Introduction
+why do network engineers care about rest api?
+often our devices have rest api.  Infoblox, netbox, network source of truth,
+controllers, internet services like github,
+
+2) REST API Characteristics
+representational state transfer, lol
+* interface with it over https
+* the url that we access represents a 'section of data', a resource
+* and different resources are on different urls
+* 4 fundamental operations we can perform on the urls:
+  GET - retrieve
+  POST - create
+  PUT - modification
+  DELETE - removal
+
+3) REST API Access from Browser
+look at api documentation
+look for python library
+then use a browser to start gathering information
+or use cli; e.g. curl
+curl -s https://netbox.lasthop.io/api/ --insecure | jq "."
+--insecure means don't verify cert, -s 'trims some data', jq "." makes the json
+output look more readable
+
+4) REST API Access from Postman
+useful tool for debugging issues with constructing GETs or whatever
+
+5) REST API Python GET
+introduces using a REST API with python.
+almost always using python requests library (must pip install)
+<example code>
+import requests
+from pprint import pprint
+
+from urllib3.exceptions import InsecureRequesetWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+if __name__ == "__main__":
+    url = "https://api.github.com/"
+    http_headers = {"accept": "application/json; version=2.4;"}
+    response = requests.get(url, headers=http_headers, verify=False)
+    response = response.json()
+
+    pprint(response)
+<end example code>
+
+6) REST API Python GET with Auth
+end of day, all that is needed is to add an authorization header to the GET request.
+<example code start>
+import requests
+from pprint import pprint
+
+from urllib3.exceptions import InsecureRequesetWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+if __name__ == "__main__":
+    token = "hasgibberish"
+    url = "https://netbox.lasthop.io/api/dcim/devices/1"
+    http_headers = {"accept": "application/json; version=2.4;"}
+    if token:
+        http_headers["authorization"] = "Token {}".format(token)
+
+    response = requests.get(url, headers=http_headers, verify=False)
+    response = response.json()
+
+    pprint(response)
+<end example code>
+
+7) REST API Python Create Object
+object being created with python and requests library
+he had to 'debug' what the POST looks like with research
+for example, he found GET used "accept": "application/json", but POST uses "Content-Type": "application/json"
+and he learned the data he had to post to correctly create the device (in his IPAM)
+the data is separate from the headers:
+<example code snippet>
+token = "foobarhash"
+url = "https://foobar"
+http_headers = {
+    "Content-Type": "application/json; version=2.4;",
+    "authorization": "Token {}".format(token),
+}
+post_data = {
+    "name": "arista8",
+    "device_role": 3 # Distrubution switch
+    "device_type": 2 # vEOS
+    "platform": 4, # Arista EOS
+    "status": 1 # Active
+}
+
+response = requests.post(
+    url, headers=http_headers, data=json.dumps(post_data), verify=False
+)  # data=json.dumps(post_data) converts post_data dictionary into json
+<end>
+figuring out the requred fields and the meaning of the numeric values take a lot of figuring out
+
+8) REST API Modify Objects
+code very similar to http post code.  he is modifying arista6.  first he GET then he makes changes and then he PUT.
+<example code snippet>
+token = "foobarhash"
+url = "https://foobar"
+# first doing a GET
+http_headers = {
+    "accept": "application/json; version=2.4;",
+    "authorization": "Token {}".format(token),
+}
+response = requests.get(url, headers=http_headers, verify=False)
+arista6 = response.json()
+
+http_headers = {
+    "Content-Type": "application/json; version=2.4",
+    "authorization": "Token {}".format(token),
+}
+# the detailed info he gets from GET is more than what PUT wants.  it'll error
+# if trying to pass "everything" instead of just "id=<#>)"
+# so, he reformats the data structure returned from the GET:
+# it's hard to see w/o all the data, but the 'fields' were subdictionaries
+# containing a key of "id" among other keys.  He strips out the subdictionary,
+# replacing it with just the value of "id" in the subdictionary.
+for field in ["device_role", "device_type", "platform", "site", "rack"]:
+    arista6[field] = arista6[field]["id"]
+# now modifying fields with our changes
+arista6["status"] = 1
+arista6["rack"] = 2
+
+response = requests.put(
+    url, headers=http_headers, data=json.dumps(arista6), verify=False
+)
+response = response.json()
+print(response)
+<end>
+
+9) REST API Delete Objects
+really simple, use the .delete method and the URL is the object you want to delete
+<example code>
+import requests
+from pprint import pprint
+
+from urllib3.exceptions import InsecureRequesetWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+if __name__ == "__main__":
+    token = "hasgibberish"
+    url = "https://netbox.lasthop.io/api/dcim/devices/11/"
+    http_headers = {
+        "Content-Type": "application/json; version=2.4;"
+        "authorization": "Token {}".format(token),
+        }
+
+    response = requests.delete(url, headers=http_headers, verify=False)
+
+    if response.ok:
+        print("Device deleted successfully")
+
+10) REST API Authentication
+making authentication work can be problematic.
+netbox was with a token (see above)
+github can auth with basic http auth, must "from requests.auth import httpbasicauth"
+and """
+response = requests.get(
+    url, headers-http_headers, auth=HTTPBasicAuth(username, password), verify=False
+)
+"""
+infoblox: httpbasicauth
+ASA rest api: httpbasicauth
+nsot (network source of truth): get a dynamically generated token and then use it
+<nsot>
+r = super(AuthTokenAuthentication, self).__call__(r)
+header = 'AuthToken %s:%s' % (self.email, self.auth_token)
+r.headers['Authorization'] = header
+return r
+<end>
+Cisco APIC: one of the most unusual, it uses a cookie
+<code ex start>
+import requests
+import json
+url = 'https://192.168.1.1/api/aaaLogin.json' # aaaLogin uri
+json_creds = {
+    "aaaUser": {
+        "attributes": {
+            "name": "user",
+            "pwd": "passwords",
+        }
+    }
+}
+my_session = requests.Session() # easiest way get cookie is create session object,
+my_session.post(url, data=json.dumps(json_creds)) # b/c the session object will automatically store your cookie
+# now my_session has a cookie for authentication later.
+
+11) REST API Closing Comments
+start with the api documentation
+start small, with GET only
+search for a python library that was built for this api
