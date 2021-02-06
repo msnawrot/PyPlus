@@ -16,7 +16,7 @@ if __name__ == "__main__":
     url = "https://netbox.lasthop.io/api/ipam/ip-addresses/286/"
     put_data = {
         "address": "192.0.2.101/32",
-        "description": ""
+        "description": "TomServo""
         }
 
     response = requests.put(url, headers=http_headers, data=json.dumps(put_data), verify=False)
