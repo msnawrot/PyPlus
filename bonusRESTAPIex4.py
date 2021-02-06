@@ -15,7 +15,7 @@ if __name__ == "__main__":
     url = "https://netbox.lasthop.io/api/ipam/ip-addresses/"
     post_data = { "address": "192.0.2.101/32"}
 
-    response = requests.post(url, headers=http_headers, data=post_data, verify=False)
+    response = requests.post(url, headers=http_headers, data=json.dumps(post_data), verify=False)
     print("RESPONSE CODE:", response.status_code)
     print("RESPONSE DATA:", response.text)
 
