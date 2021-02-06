@@ -18,7 +18,7 @@ if __name__ == "__main__":
     results = tempresults['results']
 
     for device in results:
-        temphost = device['display_name']
+        temphostname = device['display_name']
         temploc = device['site']['name']
         tempvendor = device['device_type']['manufacturer']['name']
         tempstatus = device['status']['label']
