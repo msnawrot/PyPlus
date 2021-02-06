@@ -18,4 +18,15 @@ if __name__ == "__main__":
     results = tempresults['results']
 
     for device in results:
-        print(device['display_name'])
+        temphost = device['display_name']
+        temploc = device['site']['name']
+        tempvendor = device['device_type']['manufacturer']['name']
+        tempstatus = device['status']['label']
+        print("-" * 60 )
+        print(temphostname)
+        print("-" * 10 )
+        print("Location:", temploc)
+        print("Vendor:", tempvendor)
+        print("Status:", tempstatus)
+        print("-" * 60 )
+        print("\n\n")
